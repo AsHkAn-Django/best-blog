@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card text-center my-4">
+        <div class="card-header text-secondary">
+            {{ post.date }} By {{ post.author }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.body }}</p>
+            <a class="btn btn-outline-primary" href="{% url 'post_edit' post.pk %}">Edit</a>
+            <a class="btn btn-outline-danger" href="{% url 'post_delete' post.pk %}">Delete</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            {% for comment in post.comments.all %}
+            <p>{{ comment.author }} - {{ comment }}</p>
+            {% empty %}
+            <p>No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <p><a href="{% url 'post' %}">-Get back to blogs list</a></p>
+</div>
+{% endblock content %}

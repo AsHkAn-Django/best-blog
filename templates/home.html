@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}  <!-- Make sure this is here! -->
+
+{% load django_bootstrap5 %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+<div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+        <img src="{% static 'images/home.svg' %}" width="40" height="32" class="me-2" alt="Bootstrap">
+        <h1>Home page</h1>
+      </a>
+    </header>
+
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">A BLOG FOR EVERYONE</h1>
+        <p class="col-md-8 fs-4">You can create new posts and also comment on other people's posts. If you aren't registered yet
+        register please and start writing posts now!!</p>
+            <a href="{% url 'post' %}" class="btn btn-primary">see the post</a>
+      </div>
+    </div>
+
+    <div class="row align-items-md-stretch">
+      <div class="col-md-6">
+        <div class="h-100 p-5 text-bg-dark rounded-3">
+          <h2>Post About Your Passion</h2>
+          <p>You can post about anything you like as long as it's not harmful to others.
+          Everyday is a new day for new ideas. Let's do it!</p>
+          <a class="btn btn-outline-light" href="{% url 'post_new' %}">Create a Post</a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+          <h2>About Us</h2>
+          <p>Our team is 24/7 ready to answer your questions and help you to get better at writing.
+          Don't hesitate to call us or sharing you stories with us!</p>
+          <a class="btn btn-outline-secondary" href="{% url 'about' %}">Go to About Us page</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

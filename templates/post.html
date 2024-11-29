@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+        <div class="container-fluid py-5">
+            <h2 class="display-5 fw-bold">Let's write a post</h2>
+            <p class="col-md-8 fs-4">You are in the right path, don't get nervous, Just feel relax
+                and try to be yourself. Write about the things that are important to you and our team
+                will help you during the road. GoodLuck!</p>
+            <a class="btn btn-outline-success" href="{% url 'post_new' %}">Create a Post</a>
+
+        </div>
+    </div>
+
+    {% for post in object_list %}
+    <div class="card text-center my-4">
+        <div class="card-header text-secondary">
+            {{ post.date }} By {{ post.author }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.body }}</p>
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-dark">See the Post</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            {% for comment in post.comments.all %}
+            <p>{{ comment.author }} - {{ comment }}</p>
+            {% empty %}
+            <p>No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

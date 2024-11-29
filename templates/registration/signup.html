@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Create a new account:</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">Sign up</button>
+    </form>
+</div>
+{% endblock content %}

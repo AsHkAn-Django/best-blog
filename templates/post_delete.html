@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load django_bootstrap5 %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Delete Post:</h2>
+    <p>Are you really Sure you want to delete your post?</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-danger">Delete it</button>
+        <a href="{% url 'post_detail' post.pk %}" class="btn btn-secondary">No</a>
+
+    </form>
+</div>
+{% endblock content %}
