@@ -36,7 +36,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ('title', 'body')
+    fields = ('title', 'body', 'tags',)
     template_name = 'post_edit.html'
 
     def test_func(self):
