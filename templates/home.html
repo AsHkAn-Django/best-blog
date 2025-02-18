@@ -6,6 +6,13 @@
 {% block title %}The best Blog{% endblock title %}
 
 {% block content %}
+
+{% for message in messages %}
+<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+
 <div class="container py-4">
     <header class="pb-3 mb-4 border-bottom">
       <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
@@ -34,10 +41,10 @@
       </div>
       <div class="col-md-6">
         <div class="h-100 p-5 bg-body-tertiary border rounded-3">
-          <h2>About Us</h2>
+          <h2>Give Your Feedback</h2>
           <p>Our team is 24/7 ready to answer your questions and help you to get better at writing.
           Don't hesitate to call us or sharing you stories with us!</p>
-          <a class="btn btn-outline-secondary" href="{% url 'about' %}">Go to About Us page</a>
+          <a class="btn btn-outline-secondary" href="{% url 'add_feedback' %}">Go to FeedBack page</a>
         </div>
       </div>
     </div>

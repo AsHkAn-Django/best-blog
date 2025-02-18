@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+{% for message in messages %}
+<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+
+  <div class="container my-5 col-8">
+    <h1 class="text-center mb-4">Send us your feedback</h1>
+    <form action="" method="post">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <div class="d-flex justify-content-center mt-4">
+        <button type="submit" class="btn btn-dark btn-lg">Send</button>
+      </div>
+    </form>
+  </div>
+{% endblock content %}

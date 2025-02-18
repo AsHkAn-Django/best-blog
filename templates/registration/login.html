@@ -4,16 +4,23 @@
 {% block title %}The best Blog{% endblock title %}
 
 {% block content %}
+
+{% for message in messages %}
+<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+
 <div class="container">
     <h2>Sign in to your account:</h2>
     <form action="" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button type="submit" class="btn btn-primary">Login</button
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
     <div class="pt-3">
         <a href="{% url 'password_reset' %}"> Forgot password?!</a>
-    </div>
-
 </div>
+
+
 {% endblock content %}

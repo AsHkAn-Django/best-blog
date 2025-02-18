@@ -28,8 +28,8 @@
                 <li><a href="{% url 'home' %}" class="nav-link px-2 text-secondary">Home</a></li>
                 <li><a href="{% url 'post' %}" class="nav-link px-2 text-white">Posts</a></li>
                 <li><a href="{% url 'post_new' %}" class="nav-link px-2 text-white">Create a Post</a></li>
-                <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-                <li><a href="{% url 'about' %}" class="nav-link px-2 text-white">About</a></li>
+                <li><a href="{% url 'tag_new' %}" class="nav-link px-2 text-white">Add a Tag</a></li>
+                <li><a href="{% url 'add_feedback' %}" class="nav-link px-2 text-white">Give a Feedback</a></li>
                 {% if user.is_authenticated %}
                 <li><a href="{% url 'post_new' %}" class="nav-link px-2 text-white">New Post</a></li>
                 {% else %}

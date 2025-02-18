@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
 
 {% block title %}The best Blog{% endblock title %}
 
 {% block content %}
+
+{% for message in messages %}
+<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+
 <div class="container">
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
@@ -15,6 +25,17 @@
         </div>
     </div>
 
+      <!-- Gave pk=0 for not getting an error because of url -->
+      <form action="{% url 'tag_filter' pk=0 %}" method="get" class="filter-form">
+        <div class="filter-container">
+          <div class="filter-input">
+            {% bootstrap_form form show_label=False %}
+          </div>
+          <button type="submit" class="filter-btn">Filter</button>
+        </div>
+      </form>
+      
+
     {% for post in object_list %}
     <div class="card text-center my-4">
         <div class="card-header text-secondary">
@@ -25,14 +46,47 @@
             <p class="card-text">{{ post.body }}</p>
             <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-dark">See the Post</a>
         </div>
-        <div class="card-footer text-body-secondary">
-            {% for comment in post.comments.all %}
-            <p>{{ comment.author }} - {{ comment }}</p>
-            {% empty %}
-            <p>No comments yet.</p>
+        <div class="card-footer text-muted">
+            {% for tag in post.tags.all %}
+              <a href="{% url 'tag_filter' tag.pk %}" class="badge bg-secondary">{{ tag.title }}</a>
             {% endfor %}
-        </div>
+          </div>
     </div>
     {% endfor %}
+
+    <div class="pagination justify-content-center">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo; First</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">Previous</span>
+                    </a>
+                </li>
+            {% endif %}
+    
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+    
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">Next</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">Last &raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+
 </div>
 {% endblock content %}
