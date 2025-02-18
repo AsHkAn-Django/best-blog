@@ -12,9 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import dj_database_url
 import environ
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 env = environ.Env()
 environ.Env.read_env()
@@ -68,7 +71,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [str(BASE_DIR.joinpath('templates'))],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,6 +98,8 @@ DATABASES = {
 }
 
 DATABASES["default"] = dj_database_url.parse(env.str("DATABASE_URL"))
+
+
 
 
 # Password validation
