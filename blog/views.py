@@ -61,6 +61,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(self.request, 'Post has been deleted successfully!')
         return super().form_valid(form)
 
+
 class PostNewView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ('title', 'body', 'tags',)

@@ -3,12 +3,6 @@
 
 {% block content %}
 
-{% for message in messages %}
-<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
-    {{ message }}
-</div>
-{% endfor %}
-
   <div class="container my-5 col-8">
     <h1 class="text-center mb-4">Send us your feedback</h1>
     <form action="" method="post">

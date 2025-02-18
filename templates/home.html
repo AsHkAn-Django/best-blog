@@ -7,12 +7,6 @@
 
 {% block content %}
 
-{% for message in messages %}
-<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
-    {{ message }}
-</div>
-{% endfor %}
-
 <div class="container py-4">
     <header class="pb-3 mb-4 border-bottom">
       <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">

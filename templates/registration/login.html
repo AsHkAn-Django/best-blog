@@ -5,12 +5,6 @@
 
 {% block content %}
 
-{% for message in messages %}
-<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}">
-    {{ message }}
-</div>
-{% endfor %}
-
 <div class="container">
     <h2>Sign in to your account:</h2>
     <form action="" method="post">
