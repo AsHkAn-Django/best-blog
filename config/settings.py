@@ -15,12 +15,13 @@ import environ
 import os
 
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -37,6 +38,8 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definition
 
+SITE_ID = 1
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 
     # 3rd party
     'django_bootstrap5',
@@ -97,7 +102,7 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse(env.str("DATABASE_URL"))
+# DATABASES["default"] = dj_database_url.parse(env.str("DATABASE_URL"))
 
 
 
@@ -161,4 +166,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Enables STARTTLS
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env.str('EMAIL_HOST_USER')
 

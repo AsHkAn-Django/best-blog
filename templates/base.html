@@ -1,5 +1,7 @@
 {% load django_bootstrap5 %}
 {% load static %}
+{% load blog_tags %}
+
 
 <!doctype html>
 <html lang="en">
@@ -12,7 +14,9 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
 <header class="p-3 text-bg-dark">
@@ -72,7 +76,58 @@
     </div>
 </header>
 {% bootstrap_messages %}
-{% block content %} {% endblock content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            {% block content %} {% endblock content %}
+        </div>
+
+        <div class="col-md-3 mt-5">
+
+            <div class="card my-3">
+                <div class="card-header">
+                    <h6>RSS feed</h6>
+                </div>
+                <div class="card-body text-center mx-3">
+                    <a href="{% url 'post_feed' %}" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center px-4">
+                        <i class="bi bi-rss-fill me-2"></i>Subscribe
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>Latest Posts</h5>
+                </div>
+                <div class="card-body">
+                    {% show_latest_posts 3 %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>Most Commented Posts</h5>
+                </div>
+                <div class="card-body">
+                    {% get_most_commented_posts as most_commented_posts %}
+                    <ul class="list-group list-group-flush">
+                        {% for post in most_commented_posts %}
+                            <li class="list-group-item">
+                                <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No most commented posts available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <div class="container">
     <footer class="py-5">

@@ -49,3 +49,7 @@ body {
 .filter-btn:hover {
     background: #343a40;
 }
+
+.card {
+    margin-bottom: 20px;
+}

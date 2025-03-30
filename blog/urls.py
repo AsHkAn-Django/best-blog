@@ -1,14 +1,16 @@
 from django.urls import path
-from .views import (PostDetailView, PostUpdateView,
-                    PostDeleteView, PostNewView, PostView, TagNewView, TagFilterListView, add_comment)
+from . import views
+from .feeds import LatestPostsFeed
 
 urlpatterns = [
-    path('post/tag_filter/<int:pk>/', TagFilterListView.as_view(), name='tag_filter'),  
-    path('post/add_comments/<int:pk>/', add_comment, name='add_comment'),
-    path('tag/new', TagNewView.as_view(), name='tag_new'),
-    path('post/new', PostNewView.as_view(), name='post_new'),
-    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
-    path('post/<int:pk>/edit/', PostUpdateView.as_view(), name='post_edit'),
-    path('post/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
-    path('post/', PostView.as_view(), name='post'),
+    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
+    path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post_edit'),
+    path('post/<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name='post_detail'),
+    path('post/tag_filter/<int:pk>/', views.TagFilterListView.as_view(), name='tag_filter'),  
+    path('post/add_comments/<int:pk>/', views.add_comment, name='add_comment'),
+    path('<int:post_id>/share/', views.post_share, name='post_share'),
+    path('tag/new', views.TagNewView.as_view(), name='tag_new'),
+    path('post/new', views.PostNewView.as_view(), name='post_new'),
+    path('post/', views.PostView.as_view(), name='post'),
+    path('feed/', LatestPostsFeed(), name='post_feed'),
 ]

@@ -1,0 +1,11 @@
+<ul class="list-group list-group-flush">
+    {% for post in latest_posts %}
+        <li class="list-group-item">
+            <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+                {{ post.title }}
+            </a>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-muted">No recent posts available.</li>
+    {% endfor %}
+</ul>

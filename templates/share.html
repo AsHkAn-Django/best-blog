@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Share "{{ post.title }}" by Email{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if sent %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Email Sent Successfully!</h4>
+            <p>The post "<strong>{{ post.title }}</strong>" was successfully sent to {{ form.cleaned_data.to }}.</p>
+        </div>
+    {% else %}
+        <h1 class="mb-4">Share "{{ post.title }}" by Email</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary mt-3">Send Email</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
