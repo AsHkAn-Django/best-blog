@@ -70,7 +70,7 @@ class Comment(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['created']

@@ -36,7 +36,12 @@ class PostAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
     # Show the number of ovjwcts corresponding to each specific filter
     
-admin.site.register(Comment)
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['comment', 'active', 'author', 'created']
+    ordering = ['created', 'active']
+    
+    
 admin.site.register(FeedBack)
 admin.site.register(Tag)
 admin.site.register(Media)
