@@ -6,7 +6,7 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Count
-
+from django.contrib.postgres.search import SearchVector
 
 from .models import Post, Tag, Comment
 from .forms import FilterForm, CommentForm, EmailPostForm
@@ -102,7 +102,7 @@ class TagFilterListView(ListView):
     paginate_by = 3
     
     def get_queryset(self):
-        '''Handle both tag links and filter form.'''
+        '''Handle both tag links and tag filter form.'''
         tag_id = self.kwargs.get('pk')
         # Check if user clicked on any of the tag links
         if tag_id:
@@ -162,3 +162,19 @@ def post_share(request, post_id):
     return render(request, 'share.html', {'post': post, 
                                                     'form': form, 
                                                     'sent': sent})
+    
+
+def post_search(request):
+    form = FilterForm()
+    query = None
+    results = []
+
+    query = request.GET.get('query')
+    if query:
+        print(query)
+        # annotate combines the two field together
+        # SearchVector converts text fields into a format that supports full-text search in PostgreSQL
+        # filter finds the given words in the full-text
+        results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query)
+        print(results)
+    return render(request, 'search_post_list.html', {'form': form, 'query': query, 'results': results})

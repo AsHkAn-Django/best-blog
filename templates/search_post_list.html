@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load blog_tags %}
+
+{% block title %}The best Blog{% endblock title %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="mb-4 bg-light rounded-3 shadow-sm">
+                <div class="container-fluid py-5 text-center">
+                    <h2 class="display-5 fw-bold mb-4">Create Your First Post</h2>
+                    <p class="col-md-8 mx-auto fs-4 text-muted">
+                        Writing a post is a great way to share your thoughts. Take a deep breath, relax, and let your creativity flow.
+                        Write about what matters most to you, and our team is here to support you every step of the way.
+                    </p>
+                    <a class="btn btn-outline-success btn-lg mt-3" href="{% url 'post_new' %}">Create a Post</a>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <form action="{% url 'tag_filter' pk=0 %}" method="get" class="filter-form">
+                    <div class="filter-container d-flex justify-content-center align-items-center">
+                        <div class="filter-input me-3">
+                            {% bootstrap_form form show_label=False %}
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary btn-lg">Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <h3>Posts containing "{{ query }}"</h1>
+            <h3>
+                {% with results.count as total_results %} 
+                Found {{ total_results }} result{{ total_results|pluralize}} 
+                {% endwith %}
+            </h3>
+
+            <div class="mb-4 bg-light rounded-3 shadow-sm">
+                {% for post in results %}
+                    <div class="card my-4">
+                        <div class="card-header text-secondary">
+                            {{ post.date }} By {{ post.author }}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.body|markdown|truncatewords_html:30 }}</p>
+                            <a href="{{ post.get_absolute_url }}" class="btn btn-outline-dark">See the Post</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            {% for tag in post.tags.all %}
+                                <a href="{% url 'tag_filter' tag.pk %}" class="badge bg-secondary">{{ tag.title }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="pagination justify-content-center">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo; First</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">Previous</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">Next</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">Last &raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

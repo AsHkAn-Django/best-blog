@@ -15,7 +15,6 @@
         <div class="card-body">
             <h2 class="card-title text-center">{{ post.title }}</h2>
             <p class="card-text">{{ post.body|markdown }}</p>
-            
             <div class="d-flex justify-content-center mt-4">
                 <a class="btn btn-primary btn-sm mx-3" href="{% url 'post_edit' post.pk %}">
                     Edit

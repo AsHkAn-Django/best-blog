@@ -8,6 +8,9 @@ gunicorn==23.0.0
 Markdown==3.7
 marshmallow==3.23.1
 packaging==24.2
+psycopg==3.1.18
+psycopg-binary==3.2.6
+psycopg2==2.9.10
 psycopg2-binary==2.9.10
 python-dotenv==1.0.1
 sqlparse==0.5.2
