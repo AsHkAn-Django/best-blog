@@ -6,10 +6,13 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Create a new post:</h2>
-    <form action="" method="post">
+    <form action="" method="post" novalidate>
         {% csrf_token %}
         {% bootstrap_form form %}
         <button type="submit" class="btn btn-primary">Post it</button>
     </form>
 </div>
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById("id_content") });
+</script>
 {% endblock content %}

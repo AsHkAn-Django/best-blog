@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env() 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
-    'django.contrib.postgres', # postgres wasadded
+    'django.contrib.postgres', # postgres was added
     
     # 3rd party
     'django_bootstrap5',

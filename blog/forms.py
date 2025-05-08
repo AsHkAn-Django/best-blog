@@ -1,5 +1,5 @@
 from django import forms
-from .models import Tag, Comment
+from .models import Tag, Comment, Post
 
 
 class EmailPostForm(forms.Form):
@@ -7,7 +7,7 @@ class EmailPostForm(forms.Form):
     email = forms.EmailField()
     to = forms.EmailField()
     comments = forms.CharField(required=False, widget=forms.Textarea)
-
+    
 
 class FilterForm(forms.Form):
   filter = forms.ModelChoiceField(queryset=Tag.objects.all(), required=False, label='Select a Fiter Tag')
@@ -19,3 +19,8 @@ class CommentForm(forms.ModelForm):
     fields = ('comment',)
     
   
+class PostForm(forms.ModelForm):
+  class Meta:
+    model = Post
+    fields = ['title', 'body', 'tags',]
+    widgets = { 'body': forms.Textarea(attrs={'id': 'id_content'})}

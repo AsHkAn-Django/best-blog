@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.contrib.postgres.search import SearchVector
 
 from .models import Post, Tag, Comment
-from .forms import FilterForm, CommentForm, EmailPostForm
+from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
 
 
 
@@ -76,7 +76,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class PostNewView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ('title', 'slug', 'body', 'tags',)
+    form_class = PostForm
     template_name = 'post_new.html'
     success_url = reverse_lazy('post')
 

@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-
 from django.conf import settings
 from django.utils import timezone
+from django.utils.text import slugify
+
 
 
 class PublishedManager(models.Manager):
@@ -31,7 +32,7 @@ class Post(models.Model):
     
     title = models.CharField(max_length=250)
     # So now we won't have more than one slug with the same publish date
-    slug = models.SlugField(max_length=250, unique_for_date='publish')
+    slug = models.SlugField(max_length=250, unique_for_date='publish', blank=True, null=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
@@ -56,6 +57,11 @@ class Post(models.Model):
                              self.publish.month,
                              self.publish.day,
                              self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
