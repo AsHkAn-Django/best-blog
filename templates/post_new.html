@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Create a new post:</h2>
-    <form action="" method="post" novalidate>
+    <form action="" method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         {% bootstrap_form form %}
         <button type="submit" class="btn btn-primary">Post it</button>

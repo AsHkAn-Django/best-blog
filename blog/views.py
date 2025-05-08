@@ -7,8 +7,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Count
 from django.contrib.postgres.search import SearchVector
+from django.contrib.auth.decorators import login_required
 
-from .models import Post, Tag, Comment
+
+from .models import Post, Tag, Comment, Media
 from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
 
 
@@ -74,16 +76,30 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().form_valid(form)
 
 
-class PostNewView(LoginRequiredMixin, CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'post_new.html'
-    success_url = reverse_lazy('post')
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        messages.success(self.request, 'Post has been added successfully! Admin will publish it ASAP!')
-        return super().form_valid(form)
+@login_required
+def add_new_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)  # 🟢 Include request.FILES here!
+        if form.is_valid():
+            print(form.cleaned_data.get('file'))
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            form.save_m2m()  # 🟢 Save ManyToMany (tags)
+
+            # Now handle the file
+            my_file = form.cleaned_data.get('file')
+            if my_file:
+                Media.objects.create(post=post, file=my_file)
+            
+            messages.success(request, 'Post has been added successfully! Admin will publish it ASAP!')
+            return redirect('post')  # Redirect after POST
+    else:
+        form = PostForm()
+            
+    return render(request, 'post_new.html', {'form': form})
+
 
 
 class TagNewView(LoginRequiredMixin, CreateView):

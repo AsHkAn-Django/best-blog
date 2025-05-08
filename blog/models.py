@@ -83,5 +83,18 @@ class Comment(models.Model):
         return reverse('post')
 
 
-
-
+class Media(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='media')
+    file = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.file.name
+    
+    def get_markdown_path(self):
+        if self.file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            return f"![alt text]({self.file.url})"
+        elif self.file.name.lower().endswith(('.mp4', '.webm')):
+            return f"<video controls><source src='{self.file.url}'></video>"
+        else:
+            return f"[Download file]({self.file.url})"

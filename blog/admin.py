@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Comment, Tag
+from .models import Post, Comment, Tag, Media
 from pages.models import FeedBack
 
 
@@ -39,3 +39,4 @@ class PostAdmin(admin.ModelAdmin):
 admin.site.register(Comment)
 admin.site.register(FeedBack)
 admin.site.register(Tag)
+admin.site.register(Media)

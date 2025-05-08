@@ -20,7 +20,10 @@ class CommentForm(forms.ModelForm):
     
   
 class PostForm(forms.ModelForm):
+  file = forms.FileField(required=False)
+  
   class Meta:
     model = Post
     fields = ['title', 'body', 'tags',]
     widgets = { 'body': forms.Textarea(attrs={'id': 'id_content'})}
+    
