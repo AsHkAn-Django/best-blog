@@ -166,3 +166,53 @@ Edit
   {{ form.as_p }}
   <button type="submit">Save</button>
 </form>
+
+
+
+
+
+
+
+
+ 4. Install and set up django-cleanup
+In terminal:
+
+bash
+Copy
+Edit
+pip install django-cleanup
+Then add to INSTALLED_APPS:
+
+python
+Copy
+Edit
+INSTALLED_APPS = [
+    ...
+    'django_cleanup.apps.CleanupConfig',
+]
+This automatically deletes old files when new ones are uploaded or when media is deleted.
+
+✅ 5. Show media and embed markdown in template
+If you're using {{ post.body|markdown }} in your template, and the markdown includes:
+
+markdown
+Copy
+Edit
+![Alt text](/media/uploads/myimage.png)
+<video controls><source src="/media/uploads/myvideo.mp4"></video>
+…it will be rendered properly.
+
+You can also display all uploaded media for a post like:
+
+html
+Copy
+Edit
+{% for file in post.media.all %}
+  {% if file.file.url.endswith:".mp4" %}
+    <video controls width="500">
+        <source src="{{ file.file.url }}" type="video/mp4">
+    </video>
+  {% else %}
+    <img src="{{ file.file.url }}" alt="media" style="max-width:100%;">
+  {% endif %}
+{% endfor %}

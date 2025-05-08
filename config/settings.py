@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.postgres', # postgres was added
+    'django_cleanup.apps.CleanupConfig', # This automatically deletes old files when new ones are uploaded or when media is deleted.
+
     
     # 3rd party
     'django_bootstrap5',

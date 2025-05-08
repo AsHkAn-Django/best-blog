@@ -26,3 +26,8 @@ def get_most_commented_posts(count=5):
 @register.filter(name='markdown')
 def markdown_format(text):
     return mark_safe(markdown.markdown(text, extensions=['fenced_code', 'codehilite']))
+
+
+@register.filter
+def is_video(file_url):
+    return file_url.lower().endswith('.mp4')

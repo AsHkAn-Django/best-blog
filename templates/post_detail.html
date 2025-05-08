@@ -14,7 +14,24 @@
 
         <div class="card-body">
             <h2 class="card-title text-center">{{ post.title }}</h2>
+            
+            {% for media in post.media.all %}
+            {% if media.file.url|is_video %}
+                <div class="my-3 text-center">
+                    <video controls width="500">
+                        <source src="{{ media.file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% else %}
+                <div class="my-3 text-center">
+                    <img src="{{ media.file.url }}" alt="media" style="max-width:100%;">
+                </div>
+            {% endif %}
+            {% endfor %}
+            
             <p class="card-text">{{ post.body|markdown }}</p>
+
             <div class="d-flex justify-content-center mt-4">
                 <a class="btn btn-primary btn-sm mx-3" href="{% url 'post_edit' post.pk %}">
                     Edit
