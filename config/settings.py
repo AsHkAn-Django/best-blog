@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     # 3rd party
     'django_bootstrap5',
+    'rest_framework',
 
     # My apps
     'blog',

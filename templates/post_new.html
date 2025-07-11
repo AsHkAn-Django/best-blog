@@ -1,18 +1,53 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 
-{% block title %}The best Blog{% endblock title %}
+{% block title %}Create Post{% endblock title %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Create a new post:</h2>
-    <form action="" method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <button type="submit" class="btn btn-primary">Post it</button>
-    </form>
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <h2 class="mb-4 text-center text-primary"> New Blog Post</h2>
+
+            <form action="" method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.body.label_tag }}
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <div class="text-danger small">{{ form.body.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.tags.label_tag }}
+                    {{ form.tags }}
+                    {% if form.tags.errors %}
+                        <div class="text-danger small">{{ form.tags.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg px-4"> Post it</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 <script>
-    var simplemde = new SimpleMDE({ element: document.getElementById("id_content") });
+    const textarea = document.getElementById("id_content");
+    if (textarea) {
+        var simplemde = new SimpleMDE({ element: textarea });
+    }
 </script>
 {% endblock content %}

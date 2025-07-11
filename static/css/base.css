@@ -23,10 +23,10 @@ body {
     flex-grow: 1;
 }
 
-.filter-input input {
+.filter-form .filter-input input {
     width: 100%;
     padding: 8px 12px;
-    border: none;
+    border: 1px solid #ced4da;
     border-radius: 6px;
     outline: none;
     font-size: 14px;
