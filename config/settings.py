@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env()
-environ.Env.read_env() 
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres', # postgres was added
     'django_cleanup.apps.CleanupConfig', # This automatically deletes old files when new ones are uploaded or when media is deleted.
 
-    
+
     # 3rd party
     'django_bootstrap5',
 
@@ -98,21 +98,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': env.str('DB_NAME'),
+#         'USER': env.str('DB_USER'),
+#         'PASSWORD': env.str('DB_PASSWORD'),
+#         'HOST': env.str('DB_HOST'),
+#         'PORT': env.str('DB_PORT'),
+#     }
+# }
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env.str('DB_NAME'),
-        'USER': env.str('DB_USER'),
-        'PASSWORD': env.str('DB_PASSWORD'),
-        'HOST': env.str('DB_HOST'),
-        'PORT': env.str('DB_PORT'), 
-    }
+    'default': dj_database_url.config(env.str('DATABASE_URL'))
 }
-
-
-# DATABASES["default"] = dj_database_url.parse(env.str("DATABASE_URL"))
-
-
 
 
 # Password validation

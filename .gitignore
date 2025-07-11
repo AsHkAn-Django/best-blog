@@ -1,3 +1,15 @@
+# added by ashkan
+TODOLIST.md
+*migrations/
+migrations/
+**migrations
+/staticfiles/
+*.Zone.Identifier
+*:.Zone.Identifier
+dump.rdb
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +17,9 @@ __pycache__/
 
 # C extensions
 *.so
+
+# media
+media/
 
 # Distribution / packaging
 .Python
@@ -59,6 +74,7 @@ cover/
 *.log
 local_settings.py
 db.sqlite3
+*.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -124,7 +140,6 @@ celerybeat.pid
 # Environments
 .env
 .venv
-.venv/
 env/
 venv/
 ENV/
@@ -134,8 +149,6 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
-
-media
 
 # Rope project settings
 .ropeproject
