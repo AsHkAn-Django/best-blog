@@ -275,5 +275,68 @@ createComment(postId: 1, comment: "GraphQL is awesome!") {
 ```
 
 ### Now your Django app supports both REST and GraphQL APIs!
+---
 
 
+#  JWT Authentication with Django REST Framework + Simple JWT
+Secure your API using JSON Web Tokens (JWT). This guide shows how to set it up and test it using the **ModHeader** browser extension.
+
+###  1. Install Simple JWT
+```bash
+pip install djangorestframework-simplejwt
+```
+
+### 2. Update settings.py
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# This is optional
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+```
+
+### 3. Add Token URLs to urls.py
+```python
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+urlpatterns = [
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]
+```
+
+### 4. Get a Token (use POSTMAN or Curl or ...)
+```bash
+/api/token/
+```
+With JSON body:
+```bash
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+You’ll get:
+```bash
+{
+  "access": "your_token_here",
+  "refresh": "your_refresh_token"
+}
+```
+
+### 5. Use JWT in ModHeader
+Install ModHeader Extension and add a custom header:
+```bash
+Authorization: Bearer your_token_here
+```
+
+
+Finish:) Have fun!
