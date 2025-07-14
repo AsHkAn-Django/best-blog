@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from blog.models import Post, Comment
@@ -9,6 +9,7 @@ from blog.models import Post, Comment
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.published.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.PostSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'body']

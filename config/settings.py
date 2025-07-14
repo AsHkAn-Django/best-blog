@@ -188,5 +188,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Graphene
 GRAPHENE = {
-    'SCHEMA': 'blog.schema.schema',  
+    'SCHEMA': 'blog.schema.schema',
+}
+
+
+# RESTFRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
