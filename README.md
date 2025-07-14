@@ -33,11 +33,11 @@ A robust and modern blogging platform built with Django, featuring REST and Grap
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Django, DRF, Graphene-Django  
-- **Database:** PostgreSQL / SQLite  
-- **Auth:** Token-based authentication  
-- **Editor:** SimpleMDE  
-- **File Management:** django-cleanup  
+- **Backend:** Django, DRF, Graphene-Django
+- **Database:** PostgreSQL / SQLite
+- **Auth:** Token-based authentication
+- **Editor:** SimpleMDE
+- **File Management:** django-cleanup
 - **Media Support:** Markdown image/video embedding
 
 ---
@@ -141,61 +141,139 @@ class EntryAdmin(admin.ModelAdmin):
     }
 ```
 
-## Media Upload & Display
-Markdown Embedding in Content
-```
-![Image Alt](/media/uploads/image.png)
+# Set up GraphQL using Graphene-Django.
 
-<video controls>
-  <source src="/media/uploads/video.mp4" type="video/mp4">
-</video>
+### STEP 1: Install Requirements
+In your terminal:
+```
+pip install graphene-django
 ```
 
-Template Display Example
-```
-{% for file in post.media.all %}
-  {% if file.file.url.endswith:".mp4" %}
-    <video controls width="500">
-      <source src="{{ file.file.url }}" type="video/mp4">
-    </video>
-  {% else %}
-    <img src="{{ file.file.url }}" alt="media" style="max-width:100%;">
-  {% endif %}
-{% endfor %}
+
+Then add it to your INSTALLED_APPS in settings.py:
+```python
+INSTALLED_APPS = [
+    ...
+    'graphene_django',
+]
 ```
 
-REST API Authentication
-```
-POST /api/token-auth/
-Content-Type: application/json
+And add this at the bottom of settings.py:
 
+```python
+GRAPHENE = {
+    'SCHEMA': 'blog.schema.schema',  # you'll create this file below
+}
+```
+
+### STEP 2: Create schema.py in your blog app
+```python
+# blog/schema.py
+
+import graphene
+from graphene_django.types import DjangoObjectType
+from blog.models import Post, Comment, Tag
+
+# --- Type Definitions ---
+class TagType(DjangoObjectType):
+    class Meta:
+        model = Tag
+        fields = ('id', 'title')
+
+class CommentType(DjangoObjectType):
+    class Meta:
+        model = Comment
+        fields = ('id', 'comment', 'author', 'created', 'active')
+
+class PostType(DjangoObjectType):
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'slug', 'author', 'publish', 'body', 'tags', 'comments')
+
+# --- Queries ---
+class Query(graphene.ObjectType):
+    all_posts = graphene.List(PostType)
+    post = graphene.Field(PostType, id=graphene.Int())
+
+    def resolve_all_posts(root, info):
+        return Post.published.all()
+
+    def resolve_post(root, info, id):
+        return Post.published.get(pk=id)
+
+# --- Mutations ---
+class CreateComment(graphene.Mutation):
+    class Arguments:
+        post_id = graphene.Int(required=True)
+        comment = graphene.String(required=True)
+
+    comment_obj = graphene.Field(CommentType)
+
+    def mutate(self, info, post_id, comment):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required")
+
+        post = Post.objects.get(pk=post_id)
+        comment_obj = Comment.objects.create(
+            post=post, author=user, comment=comment, active=False
+        )
+        return CreateComment(comment_obj=comment_obj)
+
+class Mutation(graphene.ObjectType):
+    create_comment = CreateComment.Field()
+
+# --- Root Schema ---
+schema = graphene.Schema(query=Query, mutation=Mutation)
+```
+
+
+###  STEP 3: Hook GraphQL into your URLs
+```python
+# in blog/urls.py (or your main urls.py if preferred):
+
+from django.urls import path
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
+
+urlpatterns = [
+    ...
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+]
+```
+
+
+###  STEP 4: Try It Out
+```
+# Visit http://127.0.0.1:8000/graphql/ to open the GraphiQL browser.
+```
+
+
+### Query Example:
+```graphql
 {
-  "username": "yourusername",
-  "password": "yourpassword"
-}
-```
-
-Use returned token:
-```
-Authorization: Token your_token
-```
-
-GraphQL Example Query
-```
-query {
-  allPosts {
+allPosts {
     title
-    content
-    author {
-      username
-    }
+    author { username }
     comments {
-      content
-      createdAt
+    comment
+    author { username }
     }
-  }
+}
+}
+
+<!-- Mutation Example: -->
+
+mutation {
+createComment(postId: 1, comment: "GraphQL is awesome!") {
+    commentObj {
+    comment
+    author { username }
+    }
+}
 }
 ```
-Visit /graphql/ to explore via GraphiQL.
+
+### Now your Django app supports both REST and GraphQL APIs!
 
 

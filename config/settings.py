@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     # 3rd party
     'django_bootstrap5',
     'rest_framework',
+    'graphene_django',
 
     # My apps
     'blog',
@@ -183,3 +184,9 @@ DEFAULT_FROM_EMAIL = env.str('EMAIL_HOST_USER')
 # Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Graphene
+GRAPHENE = {
+    'SCHEMA': 'blog.schema.schema',  
+}
