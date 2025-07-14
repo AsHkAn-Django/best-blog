@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from .feeds import LatestPostsFeed
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns = [
@@ -15,4 +17,5 @@ urlpatterns = [
     path('post/new', views.add_new_post, name='post_new'),
     path('post/', views.PostView.as_view(), name='post'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]
