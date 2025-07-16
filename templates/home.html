@@ -15,14 +15,87 @@
       </a>
     </header>
 
-    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-      <div class="container-fluid py-5">
-        <h1 class="display-5 fw-bold">A BLOG FOR EVERYONE</h1>
-        <p class="col-md-8 fs-4">You can create new posts and also comment on other people's posts. If you aren't registered yet
-        register please and start writing posts now!!</p>
-            <a href="{% url 'post' %}" class="btn btn-primary">see the post</a>
+<div class="container p-5 my-5 rounded-4 shadow-lg" style="background-color: #f1f3f5;">
+  <div class="row align-items-center">
+
+    <!-- Left Side: Main Info -->
+    <div class="col-md-6 mb-4 mb-md-0">
+      <h1 class="display-5 fw-bold text-dark">A Blog for Everyone</h1>
+      <p class="fs-5 text-secondary">You can create new posts and comment on others. Register now and start blogging!</p>
+      <a href="{% url 'post' %}" class="btn btn-primary btn-lg mt-3">See the Posts</a>
+    </div>
+
+    <!-- Right Side: Features -->
+    <div class="col-md-6">
+      <h4 class="fw-semibold mb-3 text-dark">Key Features</h4>
+      <div class="row g-2">
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">1</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">Blog Posts & Comments</h6>
+              <p class="mb-0 text-muted small">Create, update, and manage blog posts with nested comments.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">2</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">REST & GraphQL APIs</h6>
+              <p class="mb-0 text-muted small">Access content through Django REST Framework and GraphQL.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">3</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">Markdown Editor</h6>
+              <p class="mb-0 text-muted small">Write posts with rich-text using the SimpleMDE Markdown editor.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">4</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">Media Uploads & Cleanup</h6>
+              <p class="mb-0 text-muted small">Upload images/videos and auto-clean unused media with django-cleanup.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">5</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">Recommendation System</h6>
+              <p class="mb-0 text-muted small">Suggest related blog posts to keep users engaged.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-2 bg-white rounded-3 shadow-sm d-flex align-items-start gap-2">
+            <span class="badge bg-primary rounded-pill small">6</span>
+            <div>
+              <h6 class="mb-0 fw-semibold text-dark small">Email Notifications</h6>
+              <p class="mb-0 text-muted small">Send alerts to users when new posts or comments are made.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
+
+  </div>
+</div>
+
 
     <div class="row align-items-md-stretch">
       <div class="col-md-6">
