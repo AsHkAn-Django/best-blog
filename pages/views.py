@@ -22,9 +22,16 @@ class AddFeedBackView(LoginRequiredMixin, CreateView):
         text = form.cleaned_data['body'].strip()
         blob = TextBlob(text)
         sentiment_score = blob.sentiment.polarity
-        if sentiment_score > 0:
+        print(sentiment_score)
+        if sentiment_score > 0.1:
+            form.instance.sentiment = FeedBack.Sentiment.POSITIVE
             message = 'Thank you for your kind words! We’re happy to hear you had a good experience.'
-        else:
+        elif sentiment_score < -0.1:
+            form.instance.sentiment = FeedBack.Sentiment.NEGATIVE
             message = 'We’re sorry to hear you’re not satisfied. We’ll review your feedback as soon as possible. Thank you for sharing your thoughts with us.'
+        else:
+            form.instance.sentiment = FeedBack.Sentiment.NEUTRAL
+            message = 'Thanks for your feedback. We try our best to get better everyday and improve your experience.:)'
+
         messages.success(self.request, message)
         return super().form_valid(form)
