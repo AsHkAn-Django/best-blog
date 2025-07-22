@@ -4,9 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 from django.contrib import messages
 from textblob import TextBlob
+from blog.tasks import send_feedback_mail
 
 
-# Create your views here.
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -33,5 +33,6 @@ class AddFeedBackView(LoginRequiredMixin, CreateView):
             form.instance.sentiment = FeedBack.Sentiment.NEUTRAL
             message = 'Thanks for your feedback. We try our best to get better everyday and improve your experience.:)'
 
+        send_feedback_mail.delay(self.request.user.email, self.request.user.username, message)
         messages.success(self.request, message)
         return super().form_valid(form)
