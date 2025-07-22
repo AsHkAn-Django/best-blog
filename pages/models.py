@@ -7,9 +7,9 @@ class FeedBack(models.Model):
     '''Feedback from a user that only admin can read it.'''
 
     class Sentiment(models.TextChoices):
-        POSITIVE = 'POSI', 'Positive'
+        POSITIVE = 'POS', 'Positive'
         NEUTRAL = 'NEUT', 'Neutral'
-        NEGATIVE = 'NEGA', 'Negative'
+        NEGATIVE = 'NEG', 'Negative'
 
     name = models.CharField(max_length=100)
     email = models.EmailField()
