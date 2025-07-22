@@ -1,3 +1,7 @@
+<p align="center">
+<img src="static/images/blog.png" alt="App Screenshot" width="300" height="auto" >
+</p>
+
 # Django Blogging System with REST, GraphQL, Markdown & Media Support
 
 A robust and modern blogging platform built with Django, featuring REST and GraphQL APIs, Markdown support with image/video embedding, a recommendation system, email backend, comment system, and automatic media cleanup.
@@ -9,6 +13,7 @@ A robust and modern blogging platform built with Django, featuring REST and Grap
 - **Blog Posts & Comments**
   - Create, update, and manage posts and comments.
   - Nested comment support via DRF and GraphQL.
+  - Sentiment analysis on user feedback to automatically categorize comments as positive, neutral, or negative.
 
 - **API Support**
   -  **REST API** with Django REST Framework
