@@ -1,20 +1,32 @@
 {% extends 'base.html' %}
-{% load django_bootstrap5 %}
+{% load django_bootstrap5 widget_tweaks %}
 
-{% block title %}The best Blog{% endblock title %}
+{% block title %}Sign In | The Best Blog{% endblock title %}
 
 {% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="w-100" style="max-width: 400px;">
+        <h2 class="mb-4 text-center">Sign in to your account</h2>
 
-<div class="container">
-    <h2>Sign in to your account:</h2>
-    <form action="" method="post">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-    <div class="pt-3">
-        <a href="{% url 'password_reset' %}"> Forgot password?!</a>
+        <form action="" method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Username or Email</label>
+                {{ form.username|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                {{ form.password|add_class:"form-control" }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <div class="pt-3 text-center">
+            <a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot password?</a>
+        </div>
+    </div>
 </div>
-
-
 {% endblock content %}

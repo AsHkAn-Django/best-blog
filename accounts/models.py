@@ -5,4 +5,5 @@ from django.db import models
 # Create your models here.
 class CustomUser(AbstractUser):
     age = models.PositiveIntegerField(null=True, blank=True)
+    email = models.EmailField(unique=True)
 
