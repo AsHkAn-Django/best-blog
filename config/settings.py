@@ -28,6 +28,14 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False)
 
+
+# Trust the X‑Forwarded‑Proto header from your load balancer
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Force social‑auth to always build https:// redirect_uris
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
