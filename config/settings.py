@@ -48,12 +48,12 @@ INSTALLED_APPS = [
     'django.contrib.postgres', # postgres was added
     'django_cleanup.apps.CleanupConfig', # This automatically deletes old files when new ones are uploaded or when media is deleted.
 
-
     # 3rd party
     'django_bootstrap5',
     'rest_framework',
     'graphene_django',
     "widget_tweaks",
+    'social_django',
 
     # My apps
     'blog',
@@ -205,4 +205,25 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 AUTHENTICATION_BACKENDS = [
     'accounts.authentication.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
+
 ]
+
+# GoogleAuth
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET')
+
+
+# SOCIAL PIPELINES
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'accounts.pipeline.save_user_profile',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)

@@ -54,6 +54,7 @@
                 <button onclick="window.location.href='{% url 'login' %}'" class="btn btn-outline-light me-2">Login
                 </button>
                 <button onclick="window.location.href='{% url 'signup' %}'" class="btn btn-warning">Sign-up</button>
+                <a href="{% url 'social:begin' 'google-oauth2' %}"> Sign in with Google </a>
                 {%else%}
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
