@@ -1,209 +1,346 @@
-{% load django_bootstrap5 %}
-{% load static %}
-{% load blog_tags %}
+{% load django_bootstrap5 %} {% load static %} {% load blog_tags %}
 
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{% block title %}Best blog{% endblock title %}</title>
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    {% bootstrap_css %} {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script>
+      hljs.highlightAll();
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  </head>
+  <body>
+    <header class="p-3 text-bg-dark">
+      <div class="container">
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+        >
+          <a
+            href="/"
+            class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
+          >
+            <svg
+              class="bi me-2"
+              width="40"
+              height="32"
+              role="img"
+              aria-label="Bootstrap"
+            >
+              <use xlink:href="#bootstrap"></use>
+            </svg>
+          </a>
 
-</head>
-<body>
-<header class="p-3 text-bg-dark">
-    <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
-                    <use xlink:href="#bootstrap"></use>
-                </svg>
+          <ul
+            class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+          >
+            <li>
+              <a href="{% url 'home' %}" class="nav-link px-2 text-secondary"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'post' %}" class="nav-link px-2 text-white"
+                >Posts</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'post_new' %}" class="nav-link px-2 text-white"
+                >Create a Post</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'tag_new' %}" class="nav-link px-2 text-white"
+                >Add a Tag</a
+              >
+            </li>
+            <li>
+              <a
+                href="{% url 'add_feedback' %}"
+                class="nav-link px-2 text-white"
+                >Give a Feedback</a
+              >
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+              <a href="{% url 'post_new' %}" class="nav-link px-2 text-white"
+                >New Post</a
+              >
+            </li>
+            {% else %}
+            <li>
+              <span class="nav-link px-2 text-white"
+                >You're not logged in.</span
+              >
+            </li>
+            {% endif %}
+          </ul>
+
+          <form
+            class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
+            role="search"
+            method="GET"
+            action="{% url 'search_post' %}"
+          >
+            <input
+              type="search"
+              class="form-control form-control-dark"
+              placeholder="Search anything here ..."
+              aria-label="Search"
+              name="query"
+            />
+          </form>
+
+          <div class="text-end d-flex gap-2 align-items-center">
+            {% if not user.is_authenticated %}
+            <button
+              onclick="window.location.href='{% url 'login' %}'"
+              class="btn btn-outline-light"
+            >
+              Login
+            </button>
+            <button
+              onclick="window.location.href='{% url 'signup' %}'"
+              class="btn btn-warning"
+            >
+              Sign-up
+            </button>
+            <a
+              href="{% url 'social:begin' 'google-oauth2' %}?next=/"
+              class="btn btn-danger"
+            >
+              <i class="bi bi-google me-1"></i> Google
             </a>
-
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="{% url 'home' %}" class="nav-link px-2 text-secondary">Home</a></li>
-                <li><a href="{% url 'post' %}" class="nav-link px-2 text-white">Posts</a></li>
-                <li><a href="{% url 'post_new' %}" class="nav-link px-2 text-white">Create a Post</a></li>
-                <li><a href="{% url 'tag_new' %}" class="nav-link px-2 text-white">Add a Tag</a></li>
-                <li><a href="{% url 'add_feedback' %}" class="nav-link px-2 text-white">Give a Feedback</a></li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'post_new' %}" class="nav-link px-2 text-white">New Post</a></li>
-                {% else %}
-                <li><span class="nav-link px-2 text-white">You're not logged in.</span></li>
-                {% endif %}
-            </ul>
-
-            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" method="GET" action="{% url 'search_post' %}">
-                <input type="search" class="form-control form-control-dark" placeholder="Search anything here ..."
-                       aria-label="Search" name="query">
-            </form>
-
-            <div class="text-end d-flex gap-2 align-items-center">
-                {% if not user.is_authenticated %}
-                <button onclick="window.location.href='{% url 'login' %}'" class="btn btn-outline-light">Login</button>
-                <button onclick="window.location.href='{% url 'signup' %}'" class="btn btn-warning">Sign-up</button>
-                <a href="{% url 'social:begin' 'google-oauth2' %}?next=/" class="btn btn-danger">
-                    <i class="bi bi-google me-1"></i> Google
-                </a>
-                {% else %}
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ user.username }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
-                            <li><a class="dropdown-item" href="{% url 'password_reset' %}">Reset Password</a></li>
-                            <li>
-                                <form action="{% url 'logout' %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item">Log out</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+            {% else %}
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <button
+                  class="btn btn-dark dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  {{ user.username }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'password_change' %}"
+                      >Change Password</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'password_reset' %}"
+                      >Reset Password</a
+                    >
+                  </li>
+                  <li>
+                    <form action="{% url 'logout' %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item">
+                        Log out
+                      </button>
+                    </form>
+                  </li>
                 </ul>
-                {% endif %}
-            </div>
+              </li>
+            </ul>
+            {% endif %}
+          </div>
         </div>
-    </div>
-</header>
+      </div>
+    </header>
 
-{% bootstrap_messages %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-9">
-            {% block content %} {% endblock content %}
-        </div>
+    {% bootstrap_messages %}
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-md-9">{% block content %} {% endblock content %}</div>
 
         <div class="col-md-3 mt-5">
-
-            <div class="card my-3">
-                <div class="card-header">
-                    <h6>RSS feed</h6>
-                </div>
-                <div class="card-body text-center mx-3">
-                    <a href="{% url 'post_feed' %}" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center px-4">
-                        <i class="bi bi-rss-fill me-2"></i>Subscribe
-                    </a>
-                </div>
+          <div class="card my-3">
+            <div class="card-header">
+              <h6>RSS feed</h6>
             </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h5>Latest Posts</h5>
-                </div>
-                <div class="card-body">
-                    {% show_latest_posts 3 %}
-                </div>
+            <div class="card-body text-center mx-3">
+              <a
+                href="{% url 'post_feed' %}"
+                class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center px-4"
+              >
+                <i class="bi bi-rss-fill me-2"></i>Subscribe
+              </a>
             </div>
+          </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h5>Most Commented Posts</h5>
-                </div>
-                <div class="card-body">
-                    {% get_most_commented_posts as most_commented_posts %}
-                    <ul class="list-group list-group-flush">
-                        {% for post in most_commented_posts %}
-                            <li class="list-group-item">
-                                <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
-                                    {{ post.title }}
-                                </a>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-muted">No most commented posts available.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+          <div class="card">
+            <div class="card-header">
+              <h5>Latest Posts</h5>
             </div>
+            <div class="card-body">{% show_latest_posts 3 %}</div>
+          </div>
 
+          <div class="card">
+            <div class="card-header">
+              <h5>Most Commented Posts</h5>
+            </div>
+            <div class="card-body">
+              {% get_most_commented_posts as most_commented_posts %}
+              <ul class="list-group list-group-flush">
+                {% for post in most_commented_posts %}
+                <li class="list-group-item">
+                  <a
+                    href="{{ post.get_absolute_url }}"
+                    class="text-decoration-none"
+                  >
+                    {{ post.title }}
+                  </a>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">
+                  No most commented posts available.
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-
-<div class="container">
-    <footer class="py-5">
+    <div class="container">
+      <footer class="py-5">
         <div class="row">
-            <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
-                </ul>
-            </div>
-
-            <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
-                </ul>
-            </div>
-
-            <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-5 offset-md-1 mb-3">
-                <form>
-                    <h5>Subscribe to our newsletter</h5>
-                    <p>Monthly digest of what's new and exciting from us.</p>
-                    <div class="d-flex flex-column flex-sm-row w-100 gap-2">
-                        <label for="newsletter1" class="visually-hidden">Email address</label>
-                        <input id="newsletter1" type="text" class="form-control" placeholder="Email address">
-                        <button class="btn btn-primary" type="button">Subscribe</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-            <p>© 2024 Ashkan, Inc. All rights reserved.</p>
-            <ul class="list-unstyled d-flex">
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#twitter"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#instagram"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#facebook"></use>
-                    </svg>
-                </a></li>
+          <div class="col-6 col-md-2 mb-3">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary"
+                  >Features</a
+                >
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">About</a>
+              </li>
             </ul>
+          </div>
+
+          <div class="col-6 col-md-2 mb-3">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary"
+                  >Features</a
+                >
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">About</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-6 col-md-2 mb-3">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary"
+                  >Features</a
+                >
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-body-secondary">About</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-md-5 offset-md-1 mb-3">
+            <form>
+              <h5>Subscribe to our newsletter</h5>
+              <p>Monthly digest of what's new and exciting from us.</p>
+              <div class="d-flex flex-column flex-sm-row w-100 gap-2">
+                <label for="newsletter1" class="visually-hidden"
+                  >Email address</label
+                >
+                <input
+                  id="newsletter1"
+                  type="text"
+                  class="form-control"
+                  placeholder="Email address"
+                />
+                <button class="btn btn-primary" type="button">Subscribe</button>
+              </div>
+            </form>
+          </div>
         </div>
-    </footer>
-</div>
-</body>
+
+        <div
+          class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top"
+        >
+          <p>© {% now 'Y' %} Ashkan, Inc. All rights reserved.</p>
+          <ul class="list-unstyled d-flex">
+            <li class="ms-3">
+              <a class="link-body-emphasis" href="#">
+                <svg class="bi" width="24" height="24">
+                  <use xlink:href="#twitter"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="ms-3">
+              <a class="link-body-emphasis" href="#">
+                <svg class="bi" width="24" height="24">
+                  <use xlink:href="#instagram"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="ms-3">
+              <a class="link-body-emphasis" href="#">
+                <svg class="bi" width="24" height="24">
+                  <use xlink:href="#facebook"></use>
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </footer>
+    </div>
+  </body>
 </html>
