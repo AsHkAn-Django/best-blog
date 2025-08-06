@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from mptt.admin import MPTTModelAdmin
 
 from .models import Post, Comment, Tag, Media
 from pages.models import FeedBack
@@ -38,9 +39,9 @@ class PostAdmin(admin.ModelAdmin):
     # Show the number of ovjwcts corresponding to each specific filter
 
 @admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ['comment', 'active', 'author', 'created']
-    ordering = ['created', 'active']
+class CommentAdmin(MPTTModelAdmin):
+    list_display = ('comment','created', 'parent')
+    mptt_level_indent = 20  # pixels to indent per level
 
 
 @admin.register(FeedBack)

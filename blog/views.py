@@ -5,7 +5,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.decorators import login_required
 
@@ -19,7 +19,7 @@ from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
 class PostView(LoginRequiredMixin, ListView):
     template_name = 'post.html'
     paginate_by = 3
-    
+
     def get_queryset(self):
         query_set = Post.published.all()
         return query_set
@@ -39,13 +39,23 @@ def post_detail(request, year, month, day, post):
                              publish__day=day,)
     form = CommentForm
     comments = post.comments.filter(active=True)
-    # get all the tag ids in the current post and put them in a list 
+    # grab only top-level comments, sorted by '-like'
+    # for each of those, prefetch its choldren also sorted by '-like'
+    parents = (comments.filter(parent=None).order_by('-like')
+               .prefetch_related(Prefetch('children', queryset=comments.order_by('-like'),to_attr='sorted_children')))
+    total_comments = comments.count()
+    # get all the tag ids in the current post and put them in a list
     post_tags_ids = post.tags.values_list('id', flat=True)
     # find all the posts which have the same tag ids except the current post
     similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
-    # use annotate(for calculating and adding a field to the querryset like a loop) and as its calculator use Count(a django db class) to count the number of tags 
+    # use annotate(for calculating and adding a field to the querryset like a loop) and as its calculator use Count(a django db class) to count the number of tags
     similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
-    return render(request, 'post_detail.html', {'post': post, 'form': form, 'comments': comments, 'similar_posts': similar_posts})
+    return render(request, 'post_detail.html',
+                  {'post': post,
+                   'form': form,
+                   'parents': parents,
+                   'similar_posts': similar_posts,
+                   'total_comments': total_comments})
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -92,12 +102,12 @@ def add_new_post(request):
             my_file = form.cleaned_data.get('file')
             if my_file:
                 Media.objects.create(post=post, file=my_file)
-            
+
             messages.success(request, 'Post has been added successfully! Admin will publish it ASAP!')
             return redirect('post')  # Redirect after POST
     else:
         form = PostForm()
-            
+
     return render(request, 'post_new.html', {'form': form})
 
 
@@ -116,7 +126,7 @@ class TagFilterListView(ListView):
     model = Post
     template_name = "post.html"
     paginate_by = 3
-    
+
     def get_queryset(self):
         '''Handle both tag links and tag filter form.'''
         tag_id = self.kwargs.get('pk')
@@ -124,30 +134,35 @@ class TagFilterListView(ListView):
         if tag_id:
             tag = get_object_or_404(Tag, pk=tag_id)
             return tag.posts.order_by('-publish')
-        
+
         tag_id = self.request.GET.get('filter', None)
-        # Check if user used the filter form        
+        # Check if user used the filter form
         if tag_id:
             tag = get_object_or_404(Tag, pk=tag_id)
             return tag.posts.order_by('-publish')
-         
+
         # Bring all the posts if user clicked on ------- in the form
         return Post.objects.all()
-           
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = FilterForm
         return context
 
 
+@login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
-            comment = form.cleaned_data['comment']
-            new_comment = Comment(comment=comment, author=request.user, post=post)
-            new_comment.save()
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            parent_id = request.POST.get('parent_id', None)
+            if parent_id:
+                comment.parent = Comment.objects.get(pk=parent_id)
+            comment.save()
             messages.success(request, 'Your comment has been added successfully!')
             return redirect(post.get_absolute_url())
     else:
@@ -159,7 +174,7 @@ def add_comment(request, pk):
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     sent = False
-    
+
     if request.method == 'POST':
         form = EmailPostForm(request.POST)
         if form.is_valid():
@@ -168,17 +183,17 @@ def post_share(request, post_id):
             subject = f"{cd['name']} recommends you read {post.title}"
             message = f"Read {post.title} at {post_url}\n\n" \
                 f"{cd['name']}\'s comments: {cd['comments']}"
-            send_mail(subject=subject, 
-                      message=message, 
+            send_mail(subject=subject,
+                      message=message,
                       from_email=None,  # So it uses DEFAULT_FROM_EMAIL in the settings.py
                       recipient_list=[cd['to']])
-            sent = True 
+            sent = True
     else:
         form = EmailPostForm()
-    return render(request, 'share.html', {'post': post, 
-                                                    'form': form, 
+    return render(request, 'share.html', {'post': post,
+                                                    'form': form,
                                                     'sent': sent})
-    
+
 
 def post_search(request):
     form = FilterForm()

@@ -26,7 +26,7 @@ SECRET_KEY = config("SECRET_KEY")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 
 # Trust the X‑Forwarded‑Proto header from your load balancer
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'graphene_django',
     "widget_tweaks",
     'social_django',
+    'mptt',
 
     # My apps
     'blog',
@@ -116,9 +117,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # }
 
 
-DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
-}
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(config('DATABASE_URL'))
+    }
 
 
 

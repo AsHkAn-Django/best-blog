@@ -31,3 +31,12 @@ def markdown_format(text):
 @register.filter
 def is_video(file_url):
     return file_url.lower().endswith('.mp4')
+
+
+@register.inclusion_tag('comment_list.html', takes_context=True)
+def render_comments(context, comments, depth=0):
+    """
+    Renders a list of comments and their children recursively. comments should be a queryset or
+    list of comment instances. depth is used to indent nested lists.
+    """
+    return {'comments': comments, 'depth': depth, 'request': context['request']}

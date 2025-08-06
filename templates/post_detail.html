@@ -2,88 +2,56 @@
 {% load django_bootstrap5 %}
 {% load blog_tags %}
 
-{% block title %}The Best Blog{% endblock title %}
-
 {% block content %}
 <div class="container mt-5">
+  <div class="card shadow-sm rounded">
 
-    <div class="card shadow-sm rounded">
-        <div class="card-header text-center">
-            <span class="fw-light">{{ post.publish }}</span> | <span class="fw-bold">{{ post.author }}</span>
-        </div>
-
-        <div class="card-body">
-            <h2 class="card-title text-center">{{ post.title }}</h2>
-            
-            {% for media in post.media.all %}
-            {% if media.file.url|is_video %}
-                <div class="my-3 text-center">
-                    <video controls width="500">
-                        <source src="{{ media.file.url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            {% else %}
-                <div class="my-3 text-center">
-                    <img src="{{ media.file.url }}" alt="media" style="max-width:100%;">
-                </div>
-            {% endif %}
-            {% endfor %}
-            
-            <p class="card-text">{{ post.body|markdown }}</p>
-
-            <div class="d-flex justify-content-center mt-4">
-                <a class="btn btn-primary btn-sm mx-3" href="{% url 'post_edit' post.pk %}">
-                    Edit
-                </a>
-                <a class="btn btn-danger btn-sm mx-3" href="{% url 'post_delete' post.pk %}">
-                    Delete
-                </a>
-                <a class="btn btn-success btn-sm mx-3" href="{% url 'post_share' post.id %}">
-                    Share
-                </a>
-            </div>
-        </div>
-
-        <div class="card-body">
-            <h3 class="fw-bold mb-4">Similar Posts</h3>
-            {% for post in similar_posts %}
-                <div class="mb-2">
-                    <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
-                        {{ post.title }}
-                    </a>
-                </div>
-            {% empty %}
-                <p class="text-muted">There are no similar posts yet.</p>
-            {% endfor %}
-        </div>
-
-        <div class="card-footer bg-light">
-            {% with comments.count as total_comments %}
-                <h5 class="text-center">{{ total_comments }} comment{{ total_comments|pluralize }}</h5>
-            {% endwith %}
-            {% for comment in comments %}
-                <div class="alert alert-light mb-4">
-                    <p class="mb-0 text-muted">{{ comment.comment|linebreaks }}</p>
-                    <p class="mb-0 text-end text-muted">— {{ comment.author.username }}</p>
-                </div>
-            {% empty %}
-                <p class="text-center text-muted">No comments yet. Be the first to comment!</p>
-            {% endfor %}
-        </div>
-
-        <div class="card-footer bg-white">
-            <form action="{% url 'add_comment' post.pk %}" method="post">
-                {% csrf_token %}
-                {% bootstrap_form form layout='inline' %}
-                <button type="submit" class="btn btn-dark btn-sm w-100">Add Comment</button>
-            </form>
-        </div>
+    <!-- header -->
+    <div class="card-header text-center">
+      <span class="fw-light">{{ post.publish }}</span> |
+      <span class="fw-bold">{{ post.author }}</span>
     </div>
 
-    <div class="text-center mt-5">
-        <a href="{% url 'post' %}" class="btn btn-link">Back to Blog List</a>
+    <!-- body -->
+    <div class="card-body">
+      <h2 class="card-title text-center">{{ post.title }}</h2>
+      {{ post.body|markdown|safe }}
     </div>
 
+    <!-- comments -->
+    <div class="card-body border-top">
+      <h4>Comments ({{ total_comments }})</h4>
+
+      {% if parents %}
+        {% render_comments parents %}
+      {% else %}
+        <p class="text-muted">No comments yet.</p>
+      {% endif %}
+
+      <!-- new top-level comment -->
+      <div class="mt-4">
+        <h5>Leave a Comment</h5>
+        <form method="post" action="{% url 'add_comment' post.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="parent_id" value="">
+          {% bootstrap_field form.comment %}
+          <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
 </div>
-{% endblock content %}
+
+<script>
+  // toggle any reply form
+  document.querySelectorAll(".reply-link").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const id = link.dataset.commentId;
+      const form = document.getElementById(`reply-form-${id}`);
+      form.style.display = form.style.display === "none" ? "block" : "none";
+    });
+  });
+</script>
+{% endblock %}
