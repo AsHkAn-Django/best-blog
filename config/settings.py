@@ -63,9 +63,10 @@ INSTALLED_APPS = [
     "widget_tweaks",
     'social_django',
     'mptt',
+    'channels',
 
     # My apps
-    'blog',
+    'blog.apps.BlogConfig',
     'accounts',
     'pages'
 ]
@@ -244,3 +245,16 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+
+ASGI_APPLICATION = "config.asgi.application"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

@@ -343,4 +343,14 @@
       </footer>
     </div>
   </body>
+  <script>
+    const notifSocket = new WebSocket(
+      `ws://${window.location.host}/ws/notifications/`
+    );
+
+    notifSocket.onmessage = function(e){
+      const data = JSON.parse(e.data);
+      alert(data.message); // Or show in a UI dropdown
+    };
+  </script>
 </html>

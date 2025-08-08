@@ -88,6 +88,9 @@ class Comment(MPTTModel):
     def get_absolute_url(self):
         return reverse('post')
 
+    def is_reply(self):
+        return self.parent is not None
+
 
 class Media(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='media')
@@ -104,3 +107,10 @@ class Media(models.Model):
             return f"<video controls><source src='{self.file.url}'></video>"
         else:
             return f"[Download file]({self.file.url})"
+
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
