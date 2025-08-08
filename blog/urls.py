@@ -18,4 +18,6 @@ urlpatterns = [
     path('post/', views.PostView.as_view(), name='post'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('notifications/unread/', views.unread_notifications, name='unread_notifications'),
+    path('notifications/mark_read/<int:notif_id>/', views.mark_notification_read, name='mark_notification_read'),
 ]

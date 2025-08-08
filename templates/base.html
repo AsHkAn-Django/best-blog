@@ -107,60 +107,90 @@
             />
           </form>
 
-          <div class="text-end d-flex gap-2 align-items-center">
-            {% if not user.is_authenticated %}
+          <div class="text-end d-flex gap-3 align-items-center position-relative">
+
+          <!-- Notification bell -->
+          <div class="dropdown">
             <button
-              onclick="window.location.href='{% url 'login' %}'"
-              class="btn btn-outline-light"
+              id="notifBellBtn"
+              class="btn btn-dark position-relative"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Notifications"
+              type="button"
             >
-              Login
+              <i class="bi bi-bell"></i>
+              <span
+                id="notifCountBadge"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="display: none;"
+              >
+                0
+              </span>
             </button>
-            <button
-              onclick="window.location.href='{% url 'signup' %}'"
-              class="btn btn-warning"
+
+            <ul
+              id="notifDropdownList"
+              class="dropdown-menu dropdown-menu-dark dropdown-menu-end"
+              aria-labelledby="notifBellBtn"
+              style="min-width: 300px; max-height: 400px; overflow-y: auto;"
             >
-              Sign-up
-            </button>
-            <a
-              href="{% url 'social:begin' 'google-oauth2' %}?next=/"
-              class="btn btn-danger"
-            >
-              <i class="bi bi-google me-1"></i> Google
-            </a>
-            {% else %}
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <button
-                  class="btn btn-dark dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  {{ user.username }}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                  <li>
-                    <a class="dropdown-item" href="{% url 'password_change' %}"
-                      >Change Password</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="{% url 'password_reset' %}"
-                      >Reset Password</a
-                    >
-                  </li>
-                  <li>
-                    <form action="{% url 'logout' %}" method="post">
-                      {% csrf_token %}
-                      <button type="submit" class="dropdown-item">
-                        Log out
-                      </button>
-                    </form>
-                  </li>
-                </ul>
-              </li>
+              <li class="dropdown-item text-center text-muted">No notifications</li>
             </ul>
-            {% endif %}
           </div>
+
+          {% if not user.is_authenticated %}
+          <button
+            onclick="window.location.href='{% url 'login' %}'"
+            class="btn btn-outline-light"
+          >
+            Login
+          </button>
+          <button
+            onclick="window.location.href='{% url 'signup' %}'"
+            class="btn btn-warning"
+          >
+            Sign-up
+          </button>
+          <a
+            href="{% url 'social:begin' 'google-oauth2' %}?next=/"
+            class="btn btn-danger"
+          >
+            <i class="bi bi-google me-1"></i> Google
+          </a>
+          {% else %}
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <button
+                class="btn btn-dark dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{ user.username }}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li>
+                  <a class="dropdown-item" href="{% url 'password_change' %}"
+                    >Change Password</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'password_reset' %}"
+                    >Reset Password</a
+                  >
+                </li>
+                <li>
+                  <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">Log out</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {% endif %}
+        </div>
         </div>
       </div>
     </header>
@@ -343,14 +373,133 @@
       </footer>
     </div>
   </body>
-  <script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const notifBellBtn = document.getElementById('notifBellBtn');
+    const notifCountBadge = document.getElementById('notifCountBadge');
+    const notifDropdownList = document.getElementById('notifDropdownList');
+
+    // Function to update badge visibility and count
+    function updateBadge(count) {
+      if (count > 0) {
+        notifCountBadge.style.display = 'inline-block';
+        notifCountBadge.textContent = count;
+      } else {
+        notifCountBadge.style.display = 'none';
+      }
+    }
+
+    // Function to render notification items in dropdown
+    function renderNotifications(notifications) {
+      notifDropdownList.innerHTML = '';
+      if (notifications.length === 0) {
+        notifDropdownList.innerHTML = '<li class="dropdown-item text-center text-muted">No notifications</li>';
+        updateBadge(0);
+        return;
+      }
+
+      updateBadge(notifications.length);
+
+      notifications.forEach((notif) => {
+        const li = document.createElement('li');
+        li.classList.add('dropdown-item', 'notification-item');
+        li.textContent = notif.message;
+        li.style.cursor = 'pointer';
+        li.dataset.id = notif.id;
+        li.addEventListener('click', () => markAsRead(notif.id, li));
+        notifDropdownList.appendChild(li);
+      });
+    }
+
+    // Fetch unread notifications from server (create this API!)
+    async function fetchUnreadNotifications() {
+      try {
+        const response = await fetch('/notifications/unread/');
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+        const data = await response.json();
+        renderNotifications(data.notifications);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
+
+    // Mark notification as read on server (create this API!)
+    async function markAsRead(notifId, listItem) {
+      try {
+        const response = await fetch(`/notifications/mark_read/${notifId}/`, { method: 'POST', headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+        }});
+        if (!response.ok) throw new Error('Failed to mark notification as read');
+        listItem.remove();
+        // Update badge count after removal
+        const remaining = notifDropdownList.querySelectorAll('.notification-item').length;
+        if (remaining === 0) {
+          notifDropdownList.innerHTML = '<li class="dropdown-item text-center text-muted">No notifications</li>';
+        }
+        updateBadge(remaining);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // Utility to get CSRF token from cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Open WebSocket connection
     const notifSocket = new WebSocket(
       `ws://${window.location.host}/ws/notifications/`
     );
 
-    notifSocket.onmessage = function(e){
+    notifSocket.onmessage = function(e) {
       const data = JSON.parse(e.data);
-      alert(data.message); // Or show in a UI dropdown
+      // Add new notification to the dropdown list
+      const newNotif = {
+        id: data.id || 'temp-' + Date.now(),
+        message: data.message,
+      };
+
+      // Append new notification to the dropdown list
+      if (notifDropdownList.querySelector('.text-muted')) {
+        notifDropdownList.innerHTML = '';
+      }
+
+      const li = document.createElement('li');
+      li.classList.add('dropdown-item', 'notification-item');
+      li.textContent = newNotif.message;
+      li.style.cursor = 'pointer';
+      li.dataset.id = newNotif.id;
+      li.addEventListener('click', () => markAsRead(newNotif.id, li));
+      notifDropdownList.prepend(li);
+
+      // Update badge count
+      const currentCount = notifDropdownList.querySelectorAll('.notification-item').length;
+      updateBadge(currentCount);
     };
-  </script>
+
+    notifSocket.onopen = () => {
+      console.log('Notification socket connected');
+    };
+
+    notifSocket.onclose = () => {
+      console.log('Notification socket disconnected');
+    };
+
+    // Initial load of unread notifications
+    fetchUnreadNotifications();
+  });
+</script>
+
 </html>

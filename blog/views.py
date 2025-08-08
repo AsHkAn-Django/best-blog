@@ -8,9 +8,10 @@ from django.core.mail import send_mail
 from django.db.models import Count, Prefetch
 from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
-
-from .models import Post, Tag, Comment, Media
+from .models import Post, Tag, Comment, Media, Notification
 from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
 
 
@@ -209,3 +210,28 @@ def post_search(request):
         results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query)
         print(results)
     return render(request, 'search_post_list.html', {'form': form, 'query': query, 'results': results})
+
+
+@login_required
+def unread_notifications(request):
+    notifs = Notification.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')
+    data = {
+        "notifications": [
+            {"id": n.id, "message": n.message} for n in notifs
+        ]
+    }
+    return JsonResponse(data)
+
+
+@login_required
+@require_http_methods(["POST"])
+def mark_notification_read(request, notif_id):
+    try:
+        notif = Notification.objects.get(id=notif_id, recipient=request.user)
+        notif.is_read = True
+        notif.save()
+        return JsonResponse({"success": True})
+    except Notification.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Notification not found"}, status=404)
+
+
