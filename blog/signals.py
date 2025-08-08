@@ -12,7 +12,7 @@ def send_reply_notification(sender, instance, created, **kwargs):
         message = f"{instance.author.username} replied to your comment."
 
         # Save in DB
-        Notification.objects.create(recipient=recipient, message=message)
+        notification = Notification.objects.create(recipient=recipient, message=message)
 
         # Send via WebSocket
         channel_layer = get_channel_layer()
@@ -21,6 +21,7 @@ def send_reply_notification(sender, instance, created, **kwargs):
             {
                 "type": "send_notification",
                 "content": {
+                    "id": notification.id,
                     "message": message
                 }
             }
