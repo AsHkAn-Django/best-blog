@@ -216,9 +216,7 @@ def post_search(request):
 def unread_notifications(request):
     notifs = Notification.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')
     data = {
-        "notifications": [
-            {"id": n.id, "message": n.message} for n in notifs
-        ]
+        "notifications": [{"id": n.id, "message": n.message} for n in notifs]
     }
     return JsonResponse(data)
 

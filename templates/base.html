@@ -2,30 +2,41 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>{% block title %}Best blog{% endblock title %}</title>
-    {% bootstrap_css %} {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>
-      hljs.highlightAll();
-    </script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Best blog{% endblock title %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+    crossorigin="anonymous"
+  />
+
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+
+  <!-- Highlight.js -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- SimpleMDE -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css" />
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+</head>
+
   <body>
     <header class="p-3 text-bg-dark">
       <div class="container">
@@ -111,24 +122,25 @@
 
           <!-- Notification bell -->
           <div class="dropdown">
-            <button
-              id="notifBellBtn"
-              class="btn btn-dark position-relative"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-label="Notifications"
-              type="button"
+           <button
+            id="notifBellBtn"
+            class="btn btn-dark position-relative dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Notifications"
+            type="button"
+          >
+            <i class="bi bi-bell" style="font-size: 1.4rem;"></i>
+            <span
+              id="notifCountBadge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              style="display: none;"
             >
-              <i class="bi bi-bell"></i>
-              <span
-                id="notifCountBadge"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                style="display: none;"
-              >
-                0
-              </span>
-            </button>
+              0
+            </span>
+          </button>
+
 
             <ul
               id="notifDropdownList"
@@ -501,5 +513,10 @@
     fetchUnreadNotifications();
   });
 </script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+  crossorigin="anonymous"
+></script>
 
 </html>
