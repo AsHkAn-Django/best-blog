@@ -41,6 +41,7 @@ SESSION_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://best-blog.codewithashkan.com',
+    'https://www.best-blog.codewithashkan.com', 
 ]
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
@@ -100,6 +101,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.csrf',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -108,21 +110,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': env.str('DB_NAME'),
-#         'USER': env.str('DB_USER'),
-#         'PASSWORD': env.str('DB_PASSWORD'),
-#         'HOST': env.str('DB_HOST'),
-#         'PORT': env.str('DB_PORT'),
-#     }
-# }
 
 
 if 'test' in sys.argv:
