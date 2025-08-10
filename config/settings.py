@@ -41,7 +41,7 @@ SESSION_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://best-blog.codewithashkan.com',
-    'https://www.best-blog.codewithashkan.com', 
+    'https://www.best-blog.codewithashkan.com',
 ]
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
@@ -247,6 +247,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.user.get_username',
+    'accounts.pipeline.link_to_existing_user',
     'social_core.pipeline.user.create_user',
     'accounts.pipeline.save_user_profile',
     'social_core.pipeline.social_auth.associate_user',
