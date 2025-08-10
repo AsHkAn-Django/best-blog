@@ -283,15 +283,27 @@ LOGGING = {
             'stream': sys.stdout,
         },
     },
+    'loggers': {
+        'django.security.csrf': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
     'root': {
         'handlers': ['console'],
         'level': 'DEBUG',
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
 }
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://best-blog.codewithashkan.com',
+]
