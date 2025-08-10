@@ -36,6 +36,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://best-blog.codewithashkan.com',
+]
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
@@ -301,9 +308,3 @@ LOGGING = {
     },
 }
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://best-blog.codewithashkan.com',
-]
