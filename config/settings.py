@@ -262,7 +262,10 @@ ASGI_APPLICATION = "config.asgi.application"
 # Celery settings (App 1)
 CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/1"
 CELERY_RESULT_BACKEND = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/2"
-
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Istanbul'
 
 # Channels (App 1)
 CHANNEL_LAYERS = {
