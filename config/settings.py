@@ -12,12 +12,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import sys
 from decouple import config
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOG_DIR, exist_ok=True)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -222,10 +225,6 @@ REST_FRAMEWORK = {
 }
 
 
-# Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
-
 
 # Login with both email and username
 AUTHENTICATION_BACKENDS = [
@@ -259,11 +258,18 @@ SOCIAL_AUTH_PIPELINE = (
 ASGI_APPLICATION = "config.asgi.application"
 
 
+
+# Celery settings (App 1)
+CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/1"
+CELERY_RESULT_BACKEND = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/2"
+
+
+# Channels (App 1)
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/3")],
         },
     },
 }
@@ -272,27 +278,46 @@ CHANNEL_LAYERS = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'django.log'),
+            'maxBytes': 10*1024*1024,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
         },
     },
     'loggers': {
-        'django.security.csrf': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
+        'django.security.csrf': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # add app-specific loggers as needed
     },
     'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
     },
 }
 
