@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
     path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post_edit'),
-    path('post/<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name='post_detail'),
+    path('post/<int:year>/<int:month>/<int:day>/<slug:slug>/', views.post_detail, name='post_detail'),
     path('post/tag_filter/<int:pk>/', views.TagFilterListView.as_view(), name='tag_filter'),
     path('post/add_comments/<int:pk>/', views.add_comment, name='add_comment'),
     path('<int:post_id>/share/', views.post_share, name='post_share'),

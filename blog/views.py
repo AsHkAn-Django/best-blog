@@ -8,9 +8,10 @@ from django.core.mail import send_mail
 from django.db.models import Count, Prefetch
 from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
+import datetime
 
 from .models import Post, Tag, Comment, Media, Notification
 from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
@@ -32,19 +33,25 @@ class PostView(LoginRequiredMixin, ListView):
         return context
 
 
-def post_detail(request, year, month, day, post):
+def post_detail(request, year, month, day, slug):
+    # build a date object from URL
+    try:
+        req_date = datetime.date(int(year), int(month), int(day))
+    except ValueError:
+        raise Http404("Invalid date")
 
-    post = get_object_or_404(Post,
-                             status=Post.Status.PUBLISHED,
-                             slug=post,
-                             publish__year=year,
-                             publish__month=month,
-                             publish__day=day,)
+    # lookup by slug + publish date (date part) + published status
+    post = get_object_or_404(
+        Post,
+        status=Post.Status.PUBLISHED,
+        slug=slug,
+        publish__date=req_date
+    )
 
     # Increment view count in cache
-    cahce_key = f'post_{post.id}_views'
-    views = cache.get(cahce_key, 0) + 1
-    cache.set(cahce_key, views, timeout=None)
+    cache_key = f'post_{post.id}_views'
+    views = cache.get(cache_key, 0) + 1
+    cache.set(cache_key, views, timeout=None)
 
     form = CommentForm
     comments = post.comments.filter(active=True)
@@ -59,12 +66,13 @@ def post_detail(request, year, month, day, post):
     similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
     # use annotate(for calculating and adding a field to the querryset like a loop) and as its calculator use Count(a django db class) to count the number of tags
     similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
-    return render(request, 'post_detail.html',
-                  {'post': post,
-                   'form': form,
-                   'parents': parents,
-                   'similar_posts': similar_posts,
-                   'total_comments': total_comments})
+    return render(request, 'post_detail.html', {
+        'post': post,
+        'form': form,
+        'parents': parents,
+        'similar_posts': similar_posts,
+        'total_comments': total_comments,
+    })
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
