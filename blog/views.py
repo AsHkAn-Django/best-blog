@@ -10,6 +10,7 @@ from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
 
 from .models import Post, Tag, Comment, Media, Notification
 from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
@@ -32,12 +33,19 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 def post_detail(request, year, month, day, post):
+
     post = get_object_or_404(Post,
                              status=Post.Status.PUBLISHED,
                              slug=post,
                              publish__year=year,
                              publish__month=month,
                              publish__day=day,)
+
+    # Increment view count in cache
+    cahce_key = f'post_{post.id}_views'
+    views = cache.get(cahce_key, 0) + 1
+    cache.set(cahce_key, views, timeout=None)
+
     form = CommentForm
     comments = post.comments.filter(active=True)
     # grab only top-level comments, sorted by '-like'

@@ -41,6 +41,7 @@ class Post(models.Model):
     body = models.TextField()
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
     tags = models.ManyToManyField(Tag, related_name='posts')
+    views = models.PositiveIntegerField(default=0)
 
     objects = models.Manager()
     published = PublishedManager()

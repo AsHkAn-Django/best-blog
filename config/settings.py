@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
@@ -75,6 +74,7 @@ INSTALLED_APPS = [
     'social_django',
     'mptt',
     'channels',
+    'django_celery_beat',
 
     # My apps
     'blog.apps.BlogConfig',
@@ -85,7 +85,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -180,9 +179,12 @@ USE_TZ = True
 # settings.py
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [str(BASE_DIR.joinpath('static'))]  # new
-STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))  # new
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # new
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
@@ -205,10 +207,6 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')
 
-
-# Media
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Graphene
@@ -277,6 +275,18 @@ CHANNEL_LAYERS = {
     },
 }
 
+# Caching (App 1)
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/4",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": config("REDIS_PASSWORD"),
+        }
+    }
+}
+
 
 LOGGING = {
     'version': 1,
@@ -316,7 +326,6 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
-        # add app-specific loggers as needed
     },
     'root': {
         'handlers': ['console', 'file'],

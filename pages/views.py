@@ -33,6 +33,6 @@ class AddFeedBackView(LoginRequiredMixin, CreateView):
             form.instance.sentiment = FeedBack.Sentiment.NEUTRAL
             message = 'Thanks for your feedback. We try our best to get better everyday and improve your experience.:)'
 
-        send_feedback_mail.delay(self.request.user.email, self.request.user.username, message)
+        send_feedback_mail.delay(form.cleaned_data['email'], form.cleaned_data['name'], message)
         messages.success(self.request, message)
         return super().form_valid(form)
