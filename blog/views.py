@@ -34,7 +34,7 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 def post_detail(request, year, month, day, slug):
-    # build a date object from URL
+    # build a date object from the URL
     try:
         req_date = datetime.date(int(year), int(month), int(day))
     except ValueError:
@@ -45,13 +45,17 @@ def post_detail(request, year, month, day, slug):
         Post,
         status=Post.Status.PUBLISHED,
         slug=slug,
-        publish__date=req_date
+        publish__date=req_date,
     )
 
-    # Increment view count in cache
+    # Increment view count in cache (fixed variable name)
     cache_key = f'post_{post.id}_views'
-    views = cache.get(cache_key, 0) + 1
-    cache.set(cache_key, views, timeout=None)
+    try:
+        views = cache.get(cache_key, 0) + 1
+        cache.set(cache_key, views, timeout=None)
+    except Exception:
+        # if cache (redis) is down, don't crash the page
+        pass
 
     form = CommentForm
     comments = post.comments.filter(active=True)
