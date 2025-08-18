@@ -111,13 +111,13 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 @login_required
 def add_new_post(request):
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)  # 🟢 Include request.FILES here!
+        form = PostForm(request.POST, request.FILES)  # Include request.FILES here!
         if form.is_valid():
             print(form.cleaned_data.get('file'))
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            form.save_m2m()  # 🟢 Save ManyToMany (tags)
+            form.save_m2m()  # Save ManyToMany (tags)
 
             # Now handle the file
             my_file = form.cleaned_data.get('file')
