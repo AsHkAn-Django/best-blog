@@ -8,6 +8,7 @@ migrations/
 *:.Zone.Identifier
 dump.rdb
 dump.json
+logs/
 
 
 
