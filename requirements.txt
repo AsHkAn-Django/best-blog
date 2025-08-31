@@ -37,6 +37,8 @@ django-timezone-field==7.1
 django-widget-tweaks==1.5.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
+drf-spectacular==0.28.0
+drf-spectacular-sidecar==2025.8.1
 graphene==3.4.3
 graphene-django==3.2.3
 graphql-core==3.2.6
@@ -45,7 +47,10 @@ gunicorn==23.0.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
+inflection==0.5.1
 joblib==1.5.1
+jsonschema==4.25.1
+jsonschema-specifications==2025.4.1
 kombu==5.5.4
 Markdown==3.7
 marshmallow==3.23.1
@@ -64,10 +69,13 @@ pyOpenSSL==25.1.0
 python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python3-openid==3.2.0
+PyYAML==6.0.2
 redis==6.2.0
+referencing==0.36.2
 regex==2024.11.6
 requests==2.32.4
 requests-oauthlib==2.0.0
+rpds-py==0.27.1
 service-identity==24.2.0
 six==1.17.0
 social-auth-app-django==5.4.0
@@ -80,6 +88,7 @@ Twisted==25.5.0
 txaio==25.6.1
 typing_extensions==4.12.2
 tzdata==2025.2
+uritemplate==4.2.0
 urllib3==2.5.0
 vine==5.1.0
 wcwidth==0.2.13

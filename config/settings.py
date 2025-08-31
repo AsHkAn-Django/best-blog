@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     'mptt',
     'channels',
     'django_celery_beat',
+    'drf_spectacular',
+    'drf_sepctacular_sidecar',
 
     # My apps
     'blog.apps.BlogConfig',
@@ -229,7 +231,9 @@ GRAPHENE = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
 
 
