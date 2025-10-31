@@ -34,13 +34,20 @@ class TagSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True)
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'slug', 'author', 'publish', 'created', 'updated', 'body', 'status', 'tags', 'comments']
+        fields = [
+            'id', 'title', 'slug', 'author',
+            'publish', 'created', 'updated',
+            'body', 'status', 'tags', 'comments'
+        ]
 
     def get_author(self, obj):
         return obj.author.username
 
-
+    def get_comments(self, obj):
+        """Only top-level comments"""
+        top_comments = obj.comments.filter(parent=None)
+        return CommentSerializer(top_comments, many=True).data
