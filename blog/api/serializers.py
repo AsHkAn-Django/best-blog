@@ -16,7 +16,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = [
             'id', 'comment', 'author', 'created', 'parent',
-            'updated', 'active', 'children'
+            'updated', 'active', 'children', 'upvotes', 'downvotes'
         ]
         read_only_fields = ['id', 'author', 'active']
 

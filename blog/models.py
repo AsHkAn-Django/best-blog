@@ -76,6 +76,8 @@ class Comment(MPTTModel):
     active = models.BooleanField(default=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     like = models.IntegerField(default=0)
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
 
     class MPTTMeta:
         order_insertion_by = ['created']
@@ -92,6 +94,10 @@ class Comment(MPTTModel):
 
     def is_reply(self):
         return self.parent is not None
+
+    @property
+    def score(self):
+        return self.upvotes - self.downvotes
 
 
 class Media(models.Model):

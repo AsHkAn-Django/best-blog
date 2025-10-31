@@ -14,23 +14,48 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'body']
 
-    @action(detail=True, methods=['get', 'post'])
+    @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
+        """List comments for a specific post."""
         post = self.get_object()
+        comments = Comment.objects.filter(
+            post=post, parent=None).select_related("author")
+        serializer = serializers.CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if request.method == 'POST':
-            serializer = serializers.CommentSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(author=request.user, post=post)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        elif request.method == 'GET':
-            comments = Comment.objects.filter(post=post)
-            serializer = serializers.CommentSerializer(comments, many=True)
-            return Response({'comments': serializer.data}, status=status.HTTP_200_OK)
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.select_related('author', 'post')
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_serializer_class(self):
-        if self.action == 'comments':
-            return serializers.CommentSerializer
-        return super().get_serializer_class()
+    def perform_create(self, serializer):
+        parent_id = self.request.data.get('parent')
+        parent = Comment.objects.filter(id=parent_id).first() if parent_id else None
+        post_id = self.request.data.get('post')
+        post = Post.objects.get(id=post_id)
+        serializer.save(author=self.request.user, parent=parent, post=post)
+
+    @action(detail=True, methods=['post'])
+    def vote(self, request, pk=None):
+        """Upvote or downvote a comment."""
+        comment = self.get_object()
+        action_type = request.data.get('action')
+
+        if action_type == "up":
+            comment.upvotes += 1
+        elif action_type == "down":
+            comment.downvotes += 1
+        else:
+            return Response(
+                {
+                'detail': 'Invalid action'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        comment.save()
+        return Response({
+            'score': comment.score,
+            'upvotes': comment.upvotes,
+            'downvotes': comment.downvotes
+        }, status=status.HTTP_200_OK)
