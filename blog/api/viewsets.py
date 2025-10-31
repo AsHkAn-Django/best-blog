@@ -25,10 +25,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.select_related('author', 'post')
     serializer_class = serializers.CommentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return Comment.objects.filter(parent=None).select_related("author", "post")
+    
     def perform_create(self, serializer):
         parent_id = self.request.data.get('parent')
         parent = Comment.objects.filter(id=parent_id).first() if parent_id else None
