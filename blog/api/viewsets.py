@@ -25,7 +25,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-        
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CommentSerializer
@@ -41,10 +41,17 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = Post.objects.get(id=post_id)
         serializer.save(author=self.request.user, parent=parent, post=post)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['get', 'post'])
     def vote(self, request, pk=None):
         """Upvote or downvote a comment."""
         comment = self.get_object()
+
+
+        if request.method == "GET":
+            return Response({
+                "message": "Send a POST request with {'action': 'up'} or {'action': 'down'}."
+            })
+            
         action_type = request.data.get('action')
 
         if action_type == "up":
