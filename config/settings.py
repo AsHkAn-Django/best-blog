@@ -279,6 +279,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Istanbul'
 
+
 # Channels (App 1)
 CHANNEL_LAYERS = {
     "default": {
@@ -288,6 +289,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
 
 # Caching (App 1)
 CACHES = {
@@ -300,6 +302,15 @@ CACHES = {
         }
     }
 }
+
+
+if "pytest" in sys.modules:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "test-cache",
+        }
+    }
 
 
 LOGGING = {

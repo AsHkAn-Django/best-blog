@@ -23,6 +23,9 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = serializers.CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+        
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CommentSerializer
@@ -30,7 +33,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Comment.objects.filter(parent=None).select_related("author", "post")
-    
+
     def perform_create(self, serializer):
         parent_id = self.request.data.get('parent')
         parent = Comment.objects.filter(id=parent_id).first() if parent_id else None

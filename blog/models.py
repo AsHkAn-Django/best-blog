@@ -33,13 +33,22 @@ class Post(models.Model):
 
     title = models.CharField(max_length=250)
     # So now we won't have more than one slug with the same publish date
-    slug = models.SlugField(max_length=250, unique_for_date='publish', blank=True, null=True)
+    slug = models.SlugField(
+        max_length=250,
+        unique_for_date='publish',
+        blank=True,
+        null=True
+    )
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     body = models.TextField()
-    status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
+    status = models.CharField(
+        max_length=2,
+        choices=Status.choices,
+        default=Status.DRAFT
+    )
     tags = models.ManyToManyField(Tag, related_name='posts')
     views = models.PositiveIntegerField(default=0)
 
@@ -68,13 +77,23 @@ class Post(models.Model):
 
 
 class Comment(MPTTModel):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments',)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
     comment = models.CharField(max_length=140)
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = TreeForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children'
+    )
     like = models.IntegerField(default=0)
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -118,7 +137,11 @@ class Media(models.Model):
 
 
 class Notification(models.Model):
-    recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notifications')
+    recipient = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
     message = models.CharField(max_length=255)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
