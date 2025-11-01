@@ -32,7 +32,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Comment.objects.filter(parent=None).select_related("author", "post")
+        # For list view: only parent comments
+        if self.action == 'list':
+            return Comment.objects.filter(parent=None).select_related("author", "post")
+        # For detail view and other actions: include all
+        return Comment.objects.select_related("author", "post")
 
     def perform_create(self, serializer):
         parent_id = self.request.data.get('parent')
@@ -51,7 +55,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Response({
                 "message": "Send a POST request with {'action': 'up'} or {'action': 'down'}."
             })
-            
+
         action_type = request.data.get('action')
 
         if action_type == "up":
