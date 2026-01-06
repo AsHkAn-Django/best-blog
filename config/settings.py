@@ -263,8 +263,11 @@ ASGI_APPLICATION = "config.asgi.application"
 
 
 # Celery settings (App 1)
-CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/1"
-CELERY_RESULT_BACKEND = f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/2"
+REDIS_HOST = config('REDIS_HOST', default='redis')
+
+CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/1"
+CELERY_RESULT_BACKEND = f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/2"
+
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -276,7 +279,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/3"],
+            "hosts": [(f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/3")],
         },
     },
 }
@@ -286,7 +289,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://:{config('REDIS_PASSWORD')}@127.0.0.1:6379/4",
+        "LOCATION": f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/4",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "PASSWORD": config("REDIS_PASSWORD"),
