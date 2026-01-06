@@ -263,7 +263,7 @@ ASGI_APPLICATION = "config.asgi.application"
 
 
 # Celery settings (App 1)
-REDIS_HOST = config('REDIS_HOST', default='redis')
+REDIS_HOST = config("REDIS_HOST", default="redis")
 
 CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/1"
 CELERY_RESULT_BACKEND = f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/2"
@@ -279,7 +279,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/3")],
+            "hosts": [f"redis://:{config('REDIS_PASSWORD')}@{REDIS_HOST}:6379/3"],
         },
     },
 }
