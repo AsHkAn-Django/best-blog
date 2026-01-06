@@ -4,6 +4,6 @@ from celery import Celery
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 app = Celery("config")
 app.config_from_object("django.conf:settings", namespace="CELERY")
-app.conf.beat_scheduler = 'django_celery_beat.schedulers:DatabaseScheduler'
-app.conf.timezone = 'UTC'
+app.conf.beat_scheduler = "django_celery_beat.schedulers:DatabaseScheduler"
+app.conf.timezone = "UTC"
 app.autodiscover_tasks()

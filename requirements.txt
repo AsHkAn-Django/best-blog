@@ -5,6 +5,7 @@ attrs==25.3.0
 autobahn==24.4.2
 Automat==25.4.16
 billiard==4.2.1
+black==25.12.0
 celery==5.5.3
 certifi==2025.7.14
 cffi==1.17.1
@@ -39,6 +40,7 @@ djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 drf-spectacular==0.28.0
 drf-spectacular-sidecar==2025.8.1
+flake8==7.3.0
 graphene==3.4.3
 graphene-django==3.2.3
 graphql-core==3.2.6
@@ -55,17 +57,23 @@ jsonschema-specifications==2025.4.1
 kombu==5.5.4
 Markdown==3.7
 marshmallow==3.23.1
+mccabe==0.7.0
 msgpack==1.1.1
+mypy_extensions==1.1.0
 nltk==3.9.1
 oauthlib==3.3.1
 packaging==24.2
+pathspec==1.0.0
+platformdirs==4.5.1
 pluggy==1.6.0
 promise==2.3
 prompt_toolkit==3.0.51
 psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
+pycodestyle==2.14.0
 pycparser==2.22
+pyflakes==3.4.0
 Pygments==2.19.2
 PyJWT==2.9.0
 pyOpenSSL==25.1.0
@@ -74,6 +82,7 @@ pytest-django==4.11.1
 python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python3-openid==3.2.0
+pytokens==0.3.0
 PyYAML==6.0.2
 redis==6.2.0
 referencing==0.36.2

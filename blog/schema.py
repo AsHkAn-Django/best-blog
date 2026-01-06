@@ -4,22 +4,24 @@ from blog.models import Post, Comment, Tag
 from django.contrib.auth import get_user_model
 
 
-
 # STEP1:  Type Definitions
 class TagType(DjangoObjectType):
     class Meta:
         model = Tag
-        fields = ('id', 'title')
+        fields = ("id", "title")
+
 
 class UserType(DjangoObjectType):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'email')
+        fields = ("id", "username", "email")
+
 
 class CommentType(DjangoObjectType):
     class Meta:
         model = Comment
-        fields = ('id', 'comment', 'author', 'created', 'active')
+        fields = ("id", "comment", "author", "created", "active")
+
 
 class PostType(DjangoObjectType):
     author = graphene.Field(UserType)
@@ -28,13 +30,23 @@ class PostType(DjangoObjectType):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'slug', 'author', 'publish', 'body', 'tags', 'comments')
+        fields = (
+            "id",
+            "title",
+            "slug",
+            "author",
+            "publish",
+            "body",
+            "tags",
+            "comments",
+        )
 
     def resolve_comments(self, info):
         return self.comments.filter(active=True)
 
     def resolve_tags(self, info):
         return self.tags.all()
+
 
 # STEP2: Queries
 class Query(graphene.ObjectType):
@@ -62,8 +74,11 @@ class CreateComment(graphene.Mutation):
             raise Exception("Authentication required")
 
         post = Post.objects.get(pk=post_id)
-        comment_obj = Comment.objects.create(post=post, author=user, comment=comment, active=False)
+        comment_obj = Comment.objects.create(
+            post=post, author=user, comment=comment, active=False
+        )
         return CreateComment(comment_obj=comment_obj)
+
 
 class Mutation(graphene.ObjectType):
     create_comment = CreateComment.Field()

@@ -12,14 +12,15 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.PostSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'body']
+    search_fields = ["title", "body"]
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def comments(self, request, pk=None):
         """List comments for a specific post."""
         post = self.get_object()
-        comments = Comment.objects.filter(
-            post=post, parent=None).select_related("author")
+        comments = Comment.objects.filter(post=post, parent=None).select_related(
+            "author"
+        )
         serializer = serializers.CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -33,30 +34,31 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # For list view: only parent comments
-        if self.action == 'list':
+        if self.action == "list":
             return Comment.objects.filter(parent=None).select_related("author", "post")
         # For detail view and other actions: include all
         return Comment.objects.select_related("author", "post")
 
     def perform_create(self, serializer):
-        parent_id = self.request.data.get('parent')
+        parent_id = self.request.data.get("parent")
         parent = Comment.objects.filter(id=parent_id).first() if parent_id else None
-        post_id = self.request.data.get('post')
+        post_id = self.request.data.get("post")
         post = Post.objects.get(id=post_id)
         serializer.save(author=self.request.user, parent=parent, post=post)
 
-    @action(detail=True, methods=['get', 'post'])
+    @action(detail=True, methods=["get", "post"])
     def vote(self, request, pk=None):
         """Upvote or downvote a comment."""
         comment = self.get_object()
 
-
         if request.method == "GET":
-            return Response({
-                "message": "Send a POST request with {'action': 'up'} or {'action': 'down'}."
-            })
+            return Response(
+                {
+                    "message": "Send a POST request with {'action': 'up'} or {'action': 'down'}."  # noqa
+                }
+            )
 
-        action_type = request.data.get('action')
+        action_type = request.data.get("action")
 
         if action_type == "up":
             comment.upvotes += 1
@@ -64,14 +66,14 @@ class CommentViewSet(viewsets.ModelViewSet):
             comment.downvotes += 1
         else:
             return Response(
-                {
-                'detail': 'Invalid action'
-                },
-                status=status.HTTP_400_BAD_REQUEST
+                {"detail": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST
             )
         comment.save()
-        return Response({
-            'score': comment.score,
-            'upvotes': comment.upvotes,
-            'downvotes': comment.downvotes
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "score": comment.score,
+                "upvotes": comment.upvotes,
+                "downvotes": comment.downvotes,
+            },
+            status=status.HTTP_200_OK,
+        )

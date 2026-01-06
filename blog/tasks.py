@@ -5,7 +5,6 @@ from blog.models import Post
 from django.core.cache import cache
 
 
-
 @shared_task
 def send_feedback_mail(email_address, name, message):
     """
@@ -18,15 +17,15 @@ def send_feedback_mail(email_address, name, message):
         message=message_body,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[email_address],
-        fail_silently=False
+        fail_silently=False,
     )
 
 
 @shared_task
 def update_posts_view_from_cache():
     for post in Post.objects.all():
-        cache_key = f'post_{post.id}_views'
+        cache_key = f"post_{post.id}_views"
         views = cache.get(cache_key)
         if views:
             post.views = views
-            post.save(update_fields=['views'])
+            post.save(update_fields=["views"])

@@ -10,13 +10,15 @@ class EmailPostForm(forms.Form):
 
 
 class FilterForm(forms.Form):
-  filter = forms.ModelChoiceField(queryset=Tag.objects.all(), required=False, label='Select a Fiter Tag')
+    filter = forms.ModelChoiceField(
+        queryset=Tag.objects.all(), required=False, label="Select a Fiter Tag"
+    )
 
 
 class CommentForm(forms.ModelForm):
-  class Meta:
-    model = Comment
-    fields = ('comment',)
+    class Meta:
+        model = Comment
+        fields = ("comment",)
 
 
 class PostForm(forms.ModelForm):
@@ -24,18 +26,15 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'body', 'tags']
+        fields = ["title", "body", "tags"]
         widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your post title',
-                'id': 'id_title'
-            }),
-            'body': forms.Textarea(attrs={
-                'class': 'form-control',
-                'id': 'id_content'
-            }),
-            'tags': forms.SelectMultiple(attrs={
-                'class': 'form-control'
-            }),
+            "title": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter your post title",
+                    "id": "id_title",
+                }
+            ),
+            "body": forms.Textarea(attrs={"class": "form-control", "id": "id_content"}),
+            "tags": forms.SelectMultiple(attrs={"class": "form-control"}),
         }

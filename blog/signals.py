@@ -8,7 +8,6 @@ from blog.models import Post
 from .models import Comment, Notification
 
 
-
 @receiver(post_save, sender=Comment)
 def send_reply_notification(sender, instance, created, **kwargs):
     # Only for new comments that are replies (have a parent)
@@ -25,16 +24,14 @@ def send_reply_notification(sender, instance, created, **kwargs):
             f"user_{recipient.id}",  # group name per user
             {
                 "type": "send_notification",
-                "content": {
-                    "id": notification.id,
-                    "message": message
-                }
-            }
+                "content": {"id": notification.id, "message": message},
+            },
         )
         print(f"Sending notification to user {recipient.id}: {message}")
 
 
-POST_CACHE_VERSION_KEY = 'post_cache_version'
+POST_CACHE_VERSION_KEY = "post_cache_version"
+
 
 def get_post_cache_verion():
     """Get current cache version for Post-related caches."""

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from blog.models import Post, Tag, Comment
-from django.utils.text import slugify
 
 
 class RecursiveField(serializers.Serializer):
@@ -16,10 +15,18 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            'id', 'comment', 'author', 'created', 'parent',
-            'updated', 'active', 'children', 'upvotes', 'downvotes'
+            "id",
+            "comment",
+            "author",
+            "created",
+            "parent",
+            "updated",
+            "active",
+            "children",
+            "upvotes",
+            "downvotes",
         ]
-        read_only_fields = ['id', 'author', 'active']
+        read_only_fields = ["id", "author", "active"]
 
     def get_author(self, obj):
         return obj.author.username
@@ -28,7 +35,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'title']
+        fields = ["id", "title"]
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -42,11 +49,19 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
-            'id', 'title', 'author',
-            'publish', 'created', 'updated',
-            'body', 'status', 'tags', 'tag_ids', 'comments'
+            "id",
+            "title",
+            "author",
+            "publish",
+            "created",
+            "updated",
+            "body",
+            "status",
+            "tags",
+            "tag_ids",
+            "comments",
         ]
-        read_only_fields = ('slug', 'author', 'publish', 'created', 'updated')
+        read_only_fields = ("slug", "author", "publish", "created", "updated")
 
     def create(self, validated_data):
         tags = validated_data.pop("tag_ids", [])

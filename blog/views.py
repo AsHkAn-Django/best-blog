@@ -17,10 +17,8 @@ from .models import Post, Tag, Comment, Media, Notification
 from .forms import FilterForm, CommentForm, EmailPostForm, PostForm
 
 
-
-
 class PostView(LoginRequiredMixin, ListView):
-    template_name = 'post.html'
+    template_name = "post.html"
     paginate_by = 3
 
     def get_queryset(self):
@@ -29,7 +27,7 @@ class PostView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = FilterForm
+        context["form"] = FilterForm
         return context
 
 
@@ -49,7 +47,7 @@ def post_detail(request, year, month, day, slug):
     )
 
     # Increment view count in cache (fixed variable name)
-    cache_key = f'post_{post.id}_views'
+    cache_key = f"post_{post.id}_views"
     try:
         views = cache.get(cache_key, 0) + 1
         cache.set(cache_key, views, timeout=None)
@@ -61,85 +59,106 @@ def post_detail(request, year, month, day, slug):
     comments = post.comments.filter(active=True)
     # grab only top-level comments, sorted by '-like'
     # for each of those, prefetch its choldren also sorted by '-like'
-    parents = (comments.filter(parent=None).order_by('-like')
-               .prefetch_related(Prefetch('children', queryset=comments.order_by('-like'),to_attr='sorted_children')))
+    parents = (
+        comments.filter(parent=None)
+        .order_by("-like")
+        .prefetch_related(
+            Prefetch(
+                "children",
+                queryset=comments.order_by("-like"),
+                to_attr="sorted_children",
+            )
+        )
+    )
     total_comments = comments.count()
     # get all the tag ids in the current post and put them in a list
-    post_tags_ids = post.tags.values_list('id', flat=True)
+    post_tags_ids = post.tags.values_list("id", flat=True)
     # find all the posts which have the same tag ids except the current post
     similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
-    # use annotate(for calculating and adding a field to the querryset like a loop) and as its calculator use Count(a django db class) to count the number of tags
-    similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
-    return render(request, 'post_detail.html', {
-        'post': post,
-        'form': form,
-        'parents': parents,
-        'similar_posts': similar_posts,
-        'total_comments': total_comments,
-    })
+    # use annotate(for calculating and adding a field to
+    # the querryset like a loop) and as its calculator use
+    # Count(a django db class) to count the number of tags
+    similar_posts = similar_posts.annotate(same_tags=Count("tags")).order_by(
+        "-same_tags", "-publish"
+    )[:4]
+    return render(
+        request,
+        "post_detail.html",
+        {
+            "post": post,
+            "form": form,
+            "parents": parents,
+            "similar_posts": similar_posts,
+            "total_comments": total_comments,
+        },
+    )
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ('title', 'body', 'tags',)
-    template_name = 'post_edit.html'
+    fields = (
+        "title",
+        "body",
+        "tags",
+    )
+    template_name = "post_edit.html"
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
 
     def form_valid(self, form):
-        messages.success(self.request, 'Post has been updated successfully!')
+        messages.success(self.request, "Post has been updated successfully!")
         return super().form_valid(form)
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'post_delete.html'
-    success_url = reverse_lazy('home')
+    template_name = "post_delete.html"
+    success_url = reverse_lazy("home")
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
 
     def form_valid(self, form):
-        messages.success(self.request, 'Post has been deleted successfully!')
+        messages.success(self.request, "Post has been deleted successfully!")
         return super().form_valid(form)
-
 
 
 @login_required
 def add_new_post(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PostForm(request.POST, request.FILES)  # Include request.FILES here!
         if form.is_valid():
-            print(form.cleaned_data.get('file'))
+            print(form.cleaned_data.get("file"))
             post = form.save(commit=False)
             post.author = request.user
             post.save()
             form.save_m2m()  # Save ManyToMany (tags)
 
             # Now handle the file
-            my_file = form.cleaned_data.get('file')
+            my_file = form.cleaned_data.get("file")
             if my_file:
                 Media.objects.create(post=post, file=my_file)
 
-            messages.success(request, 'Post has been added successfully! Admin will publish it ASAP!')
-            return redirect('post')  # Redirect after POST
+            messages.success(
+                request, "Post has been added successfully! Admin will publish it ASAP!"
+            )
+            return redirect("post")  # Redirect after POST
     else:
         form = PostForm()
 
-    return render(request, 'post_new.html', {'form': form})
-
+    return render(request, "post_new.html", {"form": form})
 
 
 class TagNewView(LoginRequiredMixin, CreateView):
     model = Tag
-    fields = ('title',)
-    template_name = 'tag_new.html'
+    fields = ("title",)
+    template_name = "tag_new.html"
 
     def form_valid(self, form):
-        messages.success(self.request, 'Your tag has been added successfully!')
+        messages.success(self.request, "Your tag has been added successfully!")
         return super().form_valid(form)
 
 
@@ -149,71 +168,72 @@ class TagFilterListView(ListView):
     paginate_by = 3
 
     def get_queryset(self):
-        '''Handle both tag links and tag filter form.'''
-        tag_id = self.kwargs.get('pk')
+        """Handle both tag links and tag filter form."""
+        tag_id = self.kwargs.get("pk")
         # Check if user clicked on any of the tag links
         if tag_id:
             tag = get_object_or_404(Tag, pk=tag_id)
-            return tag.posts.order_by('-publish')
+            return tag.posts.order_by("-publish")
 
-        tag_id = self.request.GET.get('filter', None)
+        tag_id = self.request.GET.get("filter", None)
         # Check if user used the filter form
         if tag_id:
             tag = get_object_or_404(Tag, pk=tag_id)
-            return tag.posts.order_by('-publish')
+            return tag.posts.order_by("-publish")
 
         # Bring all the posts if user clicked on ------- in the form
         return Post.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = FilterForm
+        context["form"] = FilterForm
         return context
 
 
 @login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
             comment.author = request.user
-            parent_id = request.POST.get('parent_id', None)
+            parent_id = request.POST.get("parent_id", None)
             if parent_id:
                 comment.parent = Comment.objects.get(pk=parent_id)
             comment.save()
-            messages.success(request, 'Your comment has been added successfully!')
+            messages.success(request, "Your comment has been added successfully!")
             return redirect(post.get_absolute_url())
     else:
         form = CommentForm()
-    return render(request, 'post_detail.html', {'post': post, 'form': form})
-
+    return render(request, "post_detail.html", {"post": post, "form": form})
 
 
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     sent = False
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = EmailPostForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
             post_url = request.build_absolute_uri(post.get_absolute_url())
             subject = f"{cd['name']} recommends you read {post.title}"
-            message = f"Read {post.title} at {post_url}\n\n" \
-                f"{cd['name']}\'s comments: {cd['comments']}"
-            send_mail(subject=subject,
-                      message=message,
-                      from_email=None,  # So it uses DEFAULT_FROM_EMAIL in the settings.py
-                      recipient_list=[cd['to']])
+            message = (
+                f"Read {post.title} at {post_url}\n\n"
+                f"{cd['name']}'s comments: {cd['comments']}"
+            )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=None,  # So it uses DEFAULT_FROM_EMAIL in the settings.py
+                recipient_list=[cd["to"]],
+            )
             sent = True
     else:
         form = EmailPostForm()
-    return render(request, 'share.html', {'post': post,
-                                                    'form': form,
-                                                    'sent': sent})
+    return render(request, "share.html", {"post": post, "form": form, "sent": sent})
 
 
 def post_search(request):
@@ -221,23 +241,30 @@ def post_search(request):
     query = None
     results = []
 
-    query = request.GET.get('query')
+    query = request.GET.get("query")
     if query:
         print(query)
         # annotate combines the two field together
-        # SearchVector converts text fields into a format that supports full-text search in PostgreSQL
+        # SearchVector converts text fields into a format
+        # that supports full-text search in PostgreSQL
         # filter finds the given words in the full-text
-        results = Post.published.annotate(search=SearchVector('title', 'body'),).filter(search=query)
+        results = Post.published.annotate(
+            search=SearchVector("title", "body"),
+        ).filter(search=query)
         print(results)
-    return render(request, 'search_post_list.html', {'form': form, 'query': query, 'results': results})
+    return render(
+        request,
+        "search_post_list.html",
+        {"form": form, "query": query, "results": results},
+    )
 
 
 @login_required
 def unread_notifications(request):
-    notifs = Notification.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')
-    data = {
-        "notifications": [{"id": n.id, "message": n.message} for n in notifs]
-    }
+    notifs = Notification.objects.filter(
+        recipient=request.user, is_read=False
+    ).order_by("-created_at")
+    data = {"notifications": [{"id": n.id, "message": n.message} for n in notifs]}
     return JsonResponse(data)
 
 
@@ -250,6 +277,6 @@ def mark_notification_read(request, notif_id):
         notif.save()
         return JsonResponse({"success": True})
     except Notification.DoesNotExist:
-        return JsonResponse({"success": False, "error": "Notification not found"}, status=404)
-
-
+        return JsonResponse(
+            {"success": False, "error": "Notification not found"}, status=404
+        )

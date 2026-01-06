@@ -1,0 +1,60 @@
+name: Blog CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install flake8 black pytest pytest-django
+          pip install -r requirements.txt
+
+      - name: Run Black (Formatting)
+        run: black --check .
+
+      - name: Run Flake8 (Linting)
+        run: flake8 .
+
+      - name: Run Tests
+        env:
+          SECRET_KEY: "dummy-secret"
+          DEBUG: "True"
+        run: pytest
+
+  deploy:
+    needs: test-and-lint
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /home/best-blog 
+            git pull origin main
+
+            # Restart everything
+            docker compose down
+            docker compose up -d --build
+
+            # Run Migrations
+            docker compose exec -T web python manage.py migrate
+            docker compose exec -T web python manage.py collectstatic --noinput
+
+            # Prune old images to save space
+            docker system prune -f

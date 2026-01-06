@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope['user']
+        self.user = self.scope["user"]
 
         if self.user.is_authenticated:
             self.group_name = f"user_{self.user.id}"
@@ -19,9 +19,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        await self.send(text_data=json.dumps({
-            "message": f"Echo: {data}"
-        }))
+        await self.send(text_data=json.dumps({"message": f"Echo: {data}"}))
 
     async def send_notification(self, event):
         await self.send(text_data=json.dumps(event["content"]))
