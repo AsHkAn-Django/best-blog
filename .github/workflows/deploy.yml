@@ -29,8 +29,18 @@ jobs:
 
       - name: Run Tests
         env:
-          SECRET_KEY: "dummy-secret"
+          SECRET_KEY: "dummy-secret-for-tests"
           DEBUG: "True"
+          EMAIL_HOST_USER: "test@example.com"
+          EMAIL_HOST_PASSWORD: "dummy"
+          GOOGLE_OAUTH2_KEY: "dummy-key"
+          GOOGLE_OAUTH2_SECRET: "dummy-secret"
+          DB_NAME: "test_db"
+          DB_USER: "test_user"
+          DB_PASSWORD: "test_password"
+          DB_HOST: "localhost"
+          ALLOWED_HOSTS: "localhost,127.0.0.1"
+          REDIS_PASSWORD: "dummy"
         run: pytest
 
   deploy:
@@ -52,9 +62,9 @@ jobs:
             docker compose down
             docker compose up -d --build
 
-            # Run Migrations
+            # Run Migrations (Note the -T flag, this is excellent!)
             docker compose exec -T web python manage.py migrate
             docker compose exec -T web python manage.py collectstatic --noinput
 
-            # Prune old images to save space
+            # Clean up
             docker system prune -f
