@@ -270,6 +270,10 @@ REDIS_AUTH = f":{REDIS_PASSWORD}@" if REDIS_PASSWORD else ""
 CELERY_BROKER_URL = f"redis://{REDIS_AUTH}{REDIS_HOST}:6379/1"
 CELERY_RESULT_BACKEND = f"redis://{REDIS_AUTH}{REDIS_HOST}:6379/2"
 
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Istanbul"
 
 # --- Channels ---
 CHANNEL_LAYERS = {
@@ -289,7 +293,7 @@ CACHES = {
         "LOCATION": f"redis://{REDIS_AUTH}{REDIS_HOST}:6379/4",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            # Only include password option if it's set
+            # Only include the PASSWORD key if it actually exists
             **({"PASSWORD": REDIS_PASSWORD} if REDIS_PASSWORD else {}),
         },
     }
